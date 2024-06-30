@@ -171,6 +171,9 @@ def start_reset_password(username: string) -> Optional[Account]:
 
 
 def register_account(username: str, email: str, name: str, password: str, phone: str) -> Account:
+    if not re.match(r"^[\w\.\-]+@([\w-]+\.)+[\w-]{2,4}$", email):
+        raise P2k16UserException("Email is not valid!")
+
     account = Account.find_account_by_username(username)
     if account:
         raise P2k16UserException("Username is taken")
