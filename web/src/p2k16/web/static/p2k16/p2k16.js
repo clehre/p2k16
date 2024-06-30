@@ -725,7 +725,8 @@
         self.descriptions = badgeDescriptions;
         self.changePasswordForm = {};
         self.changeUserNameForm = {}
-        self.profileForm = { phone: P2k16.currentProfile().account.phone, username: P2k16.currentProfile().account.username };
+        self.currentProfile = P2k16.currentProfile().account
+        self.profileForm = { phone: self.currentProfile.phone, username: self.currentProfile.username };
         self.isLabelActive = false;
         updateBadges(P2k16.currentProfile());
         updateCircles(P2k16.currentProfile());

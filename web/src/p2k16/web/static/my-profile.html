@@ -1,12 +1,13 @@
 <p2k16-header active="membership"></p2k16-header>
 
 <div class="container col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3">
-  <h2 class="text-center">Change password</h2>
+  <h2 class="text-center">Edit profile details</h2>
   <br>
   <form class="form-horizontal">
     <div class="form-group">
       <!-- <label for="name" class="col-sm-3 control-label">Old password</label> -->
       <div class="col-sm-6 col-sm-offset-3">
+        <label>Password</label>
         <input class="form-control" type="password" name="oldPassword" id="oldPassword"
           ng-model="ctrl.changePasswordForm.oldPassword" placeholder="Old password" />
       </div>
@@ -26,23 +27,17 @@
     </div>
   </form>
 
-  <div class="col-sm-12">
-    <hr>
-  </div>
-
-  <h2 class="text-center">Edit profile details</h2>
-  <br>
   <div>
     <form class="form-horizontal">
       <div class="form-group">
         <!-- <label for="phone" class="col-sm-3 control-label">Phone number</label> -->
         <div class="col-sm-6 col-sm-offset-3">
-          <label>Phone Number</label>
+          <label for="phone" class="control-label">Phone Number</label>
+          <small style="color: gray"> ({{ ctrl.currentProfile.phone }})</small>
           <input class="form-control" type="text" name="phone" id="phone" placeholder="Phone"
             ng-model="ctrl.profileForm.phone" autocomplete="phone" />
         </div>
         <div class="col-sm-6 col-sm-offset-3 text-center">
-          <small style="color: gray"><br>Current phone: {{ ctrl.profileForm.phone }}</small>
         </div>
       </div>
       <div class="form-group text-center">
@@ -54,12 +49,12 @@
     <form class="form-horizontal" name="usernameForm">
       <div class="form-group">
         <div class="col-sm-6 col-sm-offset-3">
-          <label>Username</label>
+          <label for="username" class="control-label">Username</label>
+          <small style="color: gray"> ({{ ctrl.currentProfile.username }})</small>
           <input class="form-control" type="text" name="username" id="username" placeholder="Username"
             ng-model="ctrl.profileForm.username" autocomplete="username" />
         </div>
         <div class="col-sm-6 col-sm-offset-3 text-center">
-          <small style="color: gray"><br />Current name: {{ ctrl.profileForm.username }}</small>
         </div>
       </div>
       <div class="form-group text-center">
