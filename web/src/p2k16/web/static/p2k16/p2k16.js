@@ -652,6 +652,7 @@
      * @param {CoreDataService} CoreDataService
      * @param badgeDescriptions
      * @param {LabelService} LabelService
+     * @param {BadgeDataService} BadgeDataService
      * @constructor
      */
     function MyProfileController(
@@ -659,7 +660,8 @@
         P2k16,
         CoreDataService,
         badgeDescriptions,
-        LabelService
+        LabelService,
+        BadgeDataService
     ) {
         const self = this;
 
@@ -669,9 +671,9 @@
         });
 
         const updateCircles = (account) =>
-            (self.circles = Object.values(account.circles));
+            (self.circles = Object.values(account.circles || []));
         const updateBadges = (account) =>
-            (self.badges = Object.values(account.badges));
+            (self.badges = Object.values(account.badges || []));
 
         self.changePassword = () => {
             CoreDataService.service_set_password(self.changePasswordForm).then(
@@ -685,11 +687,10 @@
         self.changeUserName = () => {
             CoreDataService.service_set_username(self.profileForm).then(
                 (res) => {
-                    const msg = res.message || "Username Updated to:" + self.profileForm.username
+                    const msg = res.message || "Username Updated to:" + self.profileForm.username;
                     P2k16.addInfos(msg);
-
                 }
-            )
+            );
         };
 
         self.printBoxLabel = () => {
@@ -719,13 +720,27 @@
                 );
         };
 
+        self.delete_badge = (desc) => {
+            console.log(desc);
+            self.badge_service.delete_badge(JSON.stringify({ title: desc })).then((res) => {
+                const msg = res.message || "Badge deleted";
+                P2k16.addInfos(msg);
+                // Optionally, update the badge list
+                updateBadges(P2k16.currentProfile());
+            }).catch((error) => {
+                console.error("Error deleting badge:", error);
+                P2k16.addErrors("Error deleting badge");
+            });
+        };
+
         self.badges = [];
         self.circles = [];
         self.newBadge = {};
         self.descriptions = badgeDescriptions;
+        self.badge_service = BadgeDataService;
         self.changePasswordForm = {};
-        self.changeUserNameForm = {}
-        self.currentProfile = P2k16.currentProfile().account
+        self.changeUserNameForm = {};
+        self.currentProfile = P2k16.currentProfile().account;
         self.profileForm = { phone: self.currentProfile.phone, username: self.currentProfile.username };
         self.isLabelActive = false;
         updateBadges(P2k16.currentProfile());
@@ -825,6 +840,7 @@
 
         self.getBadgeList = () => {
             self.badgeList = Object.values(badgeDescriptions).map(badge => badge.title);
+            console.log(self.badgeList)
             return self.badgeList;
         };
 

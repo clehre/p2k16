@@ -25,6 +25,13 @@ create_badge_form = {
     "additionalProperties": False,
 }
 
+remove_badge_form = {
+    "properties": {
+        "title": {"type": "string", "minLength": 2},
+    },
+    "required": ["title"],
+    "additionalProperties": False,
+}
 badge = Blueprint('badge', __name__, template_folder='templates')
 registry = DataServiceTool("BadgeDataService", "badge-data-service.js", badge)
 
@@ -98,6 +105,23 @@ def badges_for_user(account_id):
         filter(AccountBadge.account == account). \
         all()  # type: List[AccountBadge]
     return jsonify([badge_to_json(b) for b in badges])
+
+
+@registry.route('/badge/remove-badge', methods=["POST"])
+@validate_schema(remove_badge_form)
+@flask_login.login_required
+def delete_badge():
+    logger.info(request.get_json().get("title"))
+    account = flask_login.current_user.account  # type: Account
+    title = request.get_json().get("title")
+
+    success = badge_management.remove_badge(account, title)
+
+    if success:
+        db.session.commit()
+        return jsonify({"message": f"Badge '{title}' removed successfully."}), 200
+    else:
+        return jsonify({"error": f"Failed to remove badge '{title}'. Permission denied or badge not found."}), 400
 
 
 @badge.route('/badge-data-service.js')

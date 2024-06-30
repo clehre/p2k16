@@ -102,7 +102,7 @@
   <div class="col-sm-8 col-sm-offset-2">
     <ul ng-show="ctrl.badges.length" class="list-inline list-inline-badges">
       <li ng-repeat="b in ctrl.badges" ng-init="bd=ctrl.descriptions[b.description_id]">
-        <span class="label label-default">{{ bd.title }}</span>
+        <span ng-click="ctrl.delete_badge(bd.title)" class="label label-default">{{ bd.title }}</span>
       </li>
     </ul>
     <p ng-hide="ctrl.badges.length" class="text-center">
