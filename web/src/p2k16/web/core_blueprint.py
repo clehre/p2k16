@@ -905,7 +905,7 @@ def p2k16_resources():
     return buf.getvalue(), {'Content-Type': 'application/javascript'}
 
 
-@core.route("/get_last_weeks_visitors/<int:num_days>")
+@core.route("/get_visitors_for_previous_days/<int:num_days>")
 def get_last_weeks_visitors(num_days):
     from datetime import datetime, timedelta
     start = datetime.now() - timedelta(days=num_days)
