@@ -17,8 +17,5 @@
   "dependencies": {
     "angular_js": "^18.0.5",
     "bootstrap": "^3.4.1"
-  },
-  "resolutions": {
-    "angular": "^1.8.3"
   }
 }
