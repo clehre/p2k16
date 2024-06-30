@@ -165,8 +165,8 @@ class MqttClient(object):
 
 
 _doors = [
-    DlockDoor("bv9-f2-entrance",  name="Entrance",
-              open_time=10, circles={"door"}),
+    MqttDoor("bv9-f2-entrance",  name="Entrance", topic="/p2k16dev/doors",
+             open_time=10, circles={"door"}),
 ]
 
 doors = {d.key: d for d in _doors}

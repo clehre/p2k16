@@ -30,7 +30,11 @@ stripe_pubkey = None
 register_account_form = {
     "type": "object",
     "properties": {
-        "username": nonempty_string,
+        "username": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9]+$"  # Only letters and numbers gh issue #119
+        },
         "email": {"type": "string", "format": "email", "minLength": 1},
         "name": nonempty_string,
         "password": {"type": "string", "minLength": 3},
@@ -742,6 +746,14 @@ def service_edit_profile():
     a = flask_login.current_user.account  # type: Account
 
     account_management.edit_profile(a, flask.request.json["phone"])
+    db.session.commit()
+    return jsonify({})
+
+
+@registry.route('/service/edit-username', methods=['POST'])
+def service_set_username():
+    a = flask_login.current_user.account  # type: Account
+    account_management.change_username(a, flask.request.json["username"])
     db.session.commit()
     return jsonify({})
 

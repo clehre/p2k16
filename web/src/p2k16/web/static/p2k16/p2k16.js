@@ -1,57 +1,186 @@
 (function () {
-    const resolveCircles = ['Circles', Circles => Circles.promise()];
-    const circle = ['$route', 'Circles', ($route, Circles) => {
-        const circle_id = $route.current.params.circle_id;
-        return Circles.promise().then(circles => circles.by_key[circle_id]);
-    }];
+    const resolveCircles = ["Circles", (Circles) => Circles.promise()];
+    const circle = [
+        "$route",
+        "Circles",
+        ($route, Circles) => {
+            const circle_id = $route.current.params.circle_id;
+            return Circles.promise().then((circles) => circles.by_key[circle_id]);
+        },
+    ];
     function registerRoutes($routeProvider) {
         const routes = [
-            { path: "/public/unauthenticated", controller: UnauthenticatedController, templateUrl: p2k16_resources.unauthenticated_html },
-            { path: "/", controller: FrontPageController, templateUrl: p2k16_resources.front_page_html, resolve: { recent_events: CoreDataServiceResolvers.recent_events, membership_tiers: CoreDataServiceResolvers.membership_tiers } },
-            { path: "/about", controller: AboutController, templateUrl: p2k16_resources.about_html },
-            { path: "/my-profile", controller: MyProfileController, templateUrl: p2k16_resources.my_profile_html, resolve: { badgeDescriptions: BadgeDataServiceResolvers.badge_descriptions } },
-            { path: "/tool", controller: ToolFrontPageController, templateUrl: p2k16_resources.tool_front_page_html, resolve: { tools: ToolDataServiceResolvers.data_tool_list, recent_events: ToolDataServiceResolvers.recent_events } },
-            { path: "/badges", controller: BadgesFrontPageController, templateUrl: p2k16_resources.badges_front_page_html, resolve: { recentBadges: BadgeDataServiceResolvers.recent_badges, badgeDescriptions: BadgeDataServiceResolvers.badge_descriptions } },
-            { path: "/user/:account_id", controller: UserDetailController, templateUrl: p2k16_resources.user_detail_html, resolve: { summary: CoreDataServiceResolvers.data_account_summary, badgeDescriptions: BadgeDataServiceResolvers.badge_descriptions } },
-            { path: "/admin", controller: AdminController, templateUrl: p2k16_resources.admin_html },
             {
-                path: "/admin/account", controller: AdminAccountListController, templateUrl: p2k16_resources.admin_account_list_html, resolve: { profiles: CoreDataServiceResolvers.data_profile_summary_list }
+                path: "/public/unauthenticated",
+                controller: UnauthenticatedController,
+                templateUrl: p2k16_resources.unauthenticated_html,
             },
-            ...generateAdminRoutes(resolveCircles)
+            {
+                path: "/",
+                controller: FrontPageController,
+                templateUrl: p2k16_resources.front_page_html,
+                resolve: {
+                    recent_events: CoreDataServiceResolvers.recent_events,
+                    membership_tiers: CoreDataServiceResolvers.membership_tiers,
+                },
+            },
+            {
+                path: "/about",
+                controller: AboutController,
+                templateUrl: p2k16_resources.about_html,
+            },
+            {
+                path: "/my-profile",
+                controller: MyProfileController,
+                templateUrl: p2k16_resources.my_profile_html,
+                resolve: {
+                    badgeDescriptions: BadgeDataServiceResolvers.badge_descriptions,
+                },
+            },
+            {
+                path: "/tool",
+                controller: ToolFrontPageController,
+                templateUrl: p2k16_resources.tool_front_page_html,
+                resolve: {
+                    tools: ToolDataServiceResolvers.data_tool_list,
+                    recent_events: ToolDataServiceResolvers.recent_events,
+                },
+            },
+            {
+                path: "/badges",
+                controller: BadgesFrontPageController,
+                templateUrl: p2k16_resources.badges_front_page_html,
+                resolve: {
+                    recentBadges: BadgeDataServiceResolvers.recent_badges,
+                    badgeDescriptions: BadgeDataServiceResolvers.badge_descriptions,
+                },
+            },
+            {
+                path: "/user/:account_id",
+                controller: UserDetailController,
+                templateUrl: p2k16_resources.user_detail_html,
+                resolve: {
+                    summary: CoreDataServiceResolvers.data_account_summary,
+                    badgeDescriptions: BadgeDataServiceResolvers.badge_descriptions,
+                },
+            },
+            {
+                path: "/admin",
+                controller: AdminController,
+                templateUrl: p2k16_resources.admin_html,
+            },
+            {
+                path: "/admin/account",
+                controller: AdminAccountListController,
+                templateUrl: p2k16_resources.admin_account_list_html,
+                resolve: {
+                    profiles: CoreDataServiceResolvers.data_profile_summary_list,
+                },
+            },
+            ...generateAdminRoutes(resolveCircles),
         ];
 
-        routes.forEach(route => $routeProvider.when(route.path, {
-            controller: route.controller,
-            controllerAs: 'ctrl',
-            templateUrl: route.templateUrl,
-            resolve: route.resolve
-        }));
+        routes.forEach((route) =>
+            $routeProvider.when(route.path, {
+                controller: route.controller,
+                controllerAs: "ctrl",
+                templateUrl: route.templateUrl,
+                resolve: route.resolve,
+            })
+        );
         $routeProvider.otherwise("/");
     }
     function generateAdminRoutes(resolveCircles) {
         return [
-            { path: "/admin/account/:account_id", controller: AdminAccountDetailController, templateUrl: p2k16_resources.admin_account_detail_html, resolve: { account: CoreDataServiceResolvers.data_account, circles: resolveCircles } },
-            { path: "/admin/company", controller: AdminCompanyListController, templateUrl: p2k16_resources.admin_company_list_html, resolve: { companies: CoreDataServiceResolvers.data_company_list } },
-            { path: "/admin/circle", controller: AdminCircleListController, templateUrl: p2k16_resources.admin_circle_list_html, resolve: { circles: resolveCircles } },
-            { path: "/admin/circle/new", controller: AdminCircleDetailController, templateUrl: p2k16_resources.admin_circle_detail_html, resolve: { circles: resolveCircles, circle: _.constant({}) } },
-            { path: "/admin/circle/:circle_id", controller: AdminCircleDetailController, templateUrl: p2k16_resources.admin_circle_detail_html, resolve: { circles: resolveCircles, circle: CoreDataServiceResolvers.data_circle } },
-            { path: "/admin/company/new", controller: AdminCompanyDetailController, templateUrl: p2k16_resources.admin_company_detail_html, resolve: { profiles: CoreDataServiceResolvers.data_profile_summary_list, company: _.constant({ active: true }) } },
-            { path: "/admin/company/:company_id", controller: AdminCompanyDetailController, templateUrl: p2k16_resources.admin_company_detail_html, resolve: { profiles: CoreDataServiceResolvers.data_profile_summary_list, company: CoreDataServiceResolvers.data_company } },
-            { path: "/admin/tool", controller: AdminToolListController, templateUrl: p2k16_resources.admin_tool_list_html, resolve: { tools: ToolDataServiceResolvers.data_tool_list } },
-            { path: "/admin/tool/new", controller: AdminToolDetailController, templateUrl: p2k16_resources.admin_tool_detail_html, resolve: { tools: ToolDataServiceResolvers.data_tool_list, tool: _.constant({}) } },
-            { path: "/admin/tool/:tool_id", controller: AdminToolDetailController, templateUrl: p2k16_resources.admin_tool_detail_html, resolve: { tools: ToolDataServiceResolvers.data_tool_list, tool: ToolDataServiceResolvers.data_tool } }
+            {
+                path: "/admin/account/:account_id",
+                controller: AdminAccountDetailController,
+                templateUrl: p2k16_resources.admin_account_detail_html,
+                resolve: {
+                    account: CoreDataServiceResolvers.data_account,
+                    circles: resolveCircles,
+                },
+            },
+            {
+                path: "/admin/company",
+                controller: AdminCompanyListController,
+                templateUrl: p2k16_resources.admin_company_list_html,
+                resolve: { companies: CoreDataServiceResolvers.data_company_list },
+            },
+            {
+                path: "/admin/circle",
+                controller: AdminCircleListController,
+                templateUrl: p2k16_resources.admin_circle_list_html,
+                resolve: { circles: resolveCircles },
+            },
+            {
+                path: "/admin/circle/new",
+                controller: AdminCircleDetailController,
+                templateUrl: p2k16_resources.admin_circle_detail_html,
+                resolve: { circles: resolveCircles, circle: _.constant({}) },
+            },
+            {
+                path: "/admin/circle/:circle_id",
+                controller: AdminCircleDetailController,
+                templateUrl: p2k16_resources.admin_circle_detail_html,
+                resolve: {
+                    circles: resolveCircles,
+                    circle: CoreDataServiceResolvers.data_circle,
+                },
+            },
+            {
+                path: "/admin/company/new",
+                controller: AdminCompanyDetailController,
+                templateUrl: p2k16_resources.admin_company_detail_html,
+                resolve: {
+                    profiles: CoreDataServiceResolvers.data_profile_summary_list,
+                    company: _.constant({ active: true }),
+                },
+            },
+            {
+                path: "/admin/company/:company_id",
+                controller: AdminCompanyDetailController,
+                templateUrl: p2k16_resources.admin_company_detail_html,
+                resolve: {
+                    profiles: CoreDataServiceResolvers.data_profile_summary_list,
+                    company: CoreDataServiceResolvers.data_company,
+                },
+            },
+            {
+                path: "/admin/tool",
+                controller: AdminToolListController,
+                templateUrl: p2k16_resources.admin_tool_list_html,
+                resolve: { tools: ToolDataServiceResolvers.data_tool_list },
+            },
+            {
+                path: "/admin/tool/new",
+                controller: AdminToolDetailController,
+                templateUrl: p2k16_resources.admin_tool_detail_html,
+                resolve: {
+                    tools: ToolDataServiceResolvers.data_tool_list,
+                    tool: _.constant({}),
+                },
+            },
+            {
+                path: "/admin/tool/:tool_id",
+                controller: AdminToolDetailController,
+                templateUrl: p2k16_resources.admin_tool_detail_html,
+                resolve: {
+                    tools: ToolDataServiceResolvers.data_tool_list,
+                    tool: ToolDataServiceResolvers.data_tool,
+                },
+            },
         ];
     }
 
     function config($routeProvider, $httpProvider) {
         registerRoutes($routeProvider);
-        $httpProvider.interceptors.push('P2k16HttpInterceptor');
+        $httpProvider.interceptors.push("P2k16HttpInterceptor");
         window.stripe = Stripe(window.stripe_pubkey);
     }
 
-
     function run(P2k16, $location, $rootScope) {
-        $rootScope.$on('$locationChangeStart', () => {
+        $rootScope.$on("$locationChangeStart", () => {
             const path = $location.path();
             if (!path.startsWith("/public/") && !P2k16.isLoggedIn()) {
                 $location.url("/public/unauthenticated");
@@ -60,7 +189,6 @@
 
         $rootScope.p2k16 = P2k16;
     }
-
 
     /**
      * @constructor
@@ -74,21 +202,13 @@
      * @constructor
      */
     function Log(name) {
-        function info() {
-            console.info.apply(console, [name].concat(Array.prototype.slice.call(arguments)));
-        }
-
-        function debug() {
-            console.debug.apply(console, [name].concat(Array.prototype.slice.call(arguments)));
-        }
-
         /**
          * @lends Log.prototype
          */
         return {
-            d: debug,
-            i: info
-        }
+            d: (...args) => console.info(name, ...args),
+            i: (...args) => console.debug(name, ...args),
+        };
     }
 
     /**
@@ -104,11 +224,11 @@
      * @constructor
      */
     function SmartCache($q, name, params) {
-        const defaultMapper = o => ({ key: o.id, value: o });
+        const defaultMapper = (o) => ({ key: o.id, value: o });
 
         /**
-       * @constructor
-       */
+         * @constructor
+         */
         function Item(key, value, index) {
             this.key = key;
             this.value = value;
@@ -116,71 +236,65 @@
         }
 
         const mapper = params.mapper || defaultMapper;
-        const l = new Log("SmartCache:" + name);
-        const items = {};
-        let itemCount = 0;
+        const log = new Log(`SmartCache:${name}`);
+        const items = new Map();
 
-        const by_key = {};
+        let itemCount = 0;
         const values = [];
 
-        const remove = value => {
-            const mapped = mapper(value);
-            const key = mapped.key;
-            const item = items[key];
-            delete by_key[key];
-            values[item.index] = null;
-            delete items[key];
-        }
-        const put = value => {
-            const mapped = mapper(value);
-            const key = mapped.key;
-            value = mapped.value;
-
-            let item = items[key];
-
-            let obj = {};
+        const remove = (value) => {
+            const { key } = mapper(value);
+            const item = items.get(key);
             if (item) {
-                l.d("Replacing existing item", key);
-                obj = item.value;
-                Object.keys(obj).forEach(k => delete obj[k]);
-            } else {
-                l.d("Creating new item", key);
-                item = new Item(key, obj, itemCount++);
-                items[key] = item;
-                by_key[key] = obj;
-                values[item.index] = obj;
+                items.delete(key);
+                values[item.index] = null;
             }
+        };
 
-            Object.assign(obj, value);
-        }
+        const put = (value) => {
+            const { key, value: mappedValue } = mapper(value);
+            let item = items.get(key);
 
+            if (item) {
+                log.d("Replacing existing item", key);
+                Object.assign(item.value, mappedValue);
+                return;
+            }
+            log.d("Creating new item", key);
+            const newItem = new Item(key, {}, itemCount++);
+            items.set(key, newItem);
+            values[newItem.index] = newItem.value;
+            Object.assign(newItem.value, mappedValue);
+        };
 
         const promise = () => {
             const deferred = $q.defer();
             deferred.resolve(instance);
             return deferred.promise;
-        }
+        };
 
-        const executeControl = control => {
-            l.d("Executing control", control.type);
+        const executeControl = (control) => {
+            log.d("Executing control", control.type);
             if (control.type === "replace-collection") {
-                control.data.forEach(updated => put(updated));
+                control.data.forEach((updated) => put(updated));
             }
-        }
+        };
+
+
         /**
-               * @lends SmartCache.prototype
-               */
+         *  @lends SmartCache instance
+         */
         const instance = {
             promise,
             executeControl,
             put,
             remove,
             values,
-            by_key,
-            getName: function () {
+            getName() {
                 return name;
-            }
+            },
         };
+
         return instance;
     }
 
@@ -211,17 +325,17 @@
          */
         return {
             add,
-            notify
+            notify,
         };
     }
 
     /**
-        * @param $rootScope
-        * @param {SmartCache} Circles
-        * @param {SmartCache} BadgeDescriptions
-        * @param $timeout
-        * @constructor
-        */
+     * @param $rootScope
+     * @param {SmartCache} Circles
+     * @param {SmartCache} BadgeDescriptions
+     * @param $timeout
+     * @constructor
+     */
     function P2k16($rootScope, Circles, BadgeDescriptions, $timeout) {
         const self = this;
         self.$rootScope = $rootScope;
@@ -255,7 +369,9 @@
         }
 
         function isInCircle(circleName) {
-            return self.profile && Object.some(self.profile.circles, { "name": circleName });
+            return (
+                self.profile && Object.some(self.profile.circles, { name: circleName })
+            );
         }
 
         function setLoggedIn(data) {
@@ -263,18 +379,18 @@
         }
 
         function addMessages(messages, cssClass) {
-            const add = text => {
+            const add = (text) => {
                 text = (typeof text === "string" ? text : "").trim();
                 if (!text.length) {
                     return;
                 }
                 self.messages.push(new P2k16Message(text, cssClass));
-                if (cssClass === 'alert-info') {
+                if (cssClass === "alert-info") {
                     $timeout(() => self.messages.dismissByText(text), 5000);
                 }
-            }
+            };
 
-            if (typeof messages === 'string') {
+            if (typeof messages === "string") {
                 add(messages, cssClass);
             } else {
                 messages.forEach(add);
@@ -298,15 +414,21 @@
         }
 
         self.circlesWithAdminAccess = window.p2k16.circlesWithAdminAccess || [];
-        Circles.executeControl({ type: "replace-collection", data: window.p2k16.circles || [] });
-        BadgeDescriptions.executeControl({ type: "replace-collection", data: window.p2k16.badgeDescriptions || [] });
+        Circles.executeControl({
+            type: "replace-collection",
+            data: window.p2k16.circles || [],
+        });
+        BadgeDescriptions.executeControl({
+            type: "replace-collection",
+            data: window.p2k16.badgeDescriptions || [],
+        });
         self.stripe_pubkey = window.p2k16.stripe_pubkey || "";
 
         window.p2k16 = undefined;
 
         self.messages.dismiss = (index) => self.messages.splice(index, 1);
         self.messages.dismissByText = (text) => {
-            const idx = self.messages.findIndex(e => e.text === text);
+            const idx = self.messages.findIndex((e) => e.text === text);
             self.messages.dismiss(idx);
         };
 
@@ -323,8 +445,8 @@
             addInfos,
             stripe_pubkey: self.stripe_pubkey,
             messages: self.messages,
-            canAdminCircle
-        }
+            canAdminCircle,
+        };
     }
 
     /**
@@ -335,11 +457,15 @@
      */
     function AuthzService($http, P2k16, CoreDataService) {
         function logIn(form) {
-            return $http.post('/service/authz/log-in', form).then(res => P2k16.setLoggedIn(res.data));
+            return $http
+                .post("/service/authz/log-in", form)
+                .then((res) => P2k16.setLoggedIn(res.data));
         }
 
         function logOut() {
-            return CoreDataService.service_authz_logout().then(() => P2k16.setLoggedIn(null));
+            return CoreDataService.service_authz_logout().then(() =>
+                P2k16.setLoggedIn(null)
+            );
         }
 
         /**
@@ -347,23 +473,33 @@
          */
         return {
             logIn,
-            logOut
-        }
+            logOut,
+        };
     }
 
     function p2k16HeaderDirective() {
-        function p2k16HeaderController($scope, $location, P2k16, AuthzService, CoreDataService) {
+        function p2k16HeaderController(
+            $scope,
+            $location,
+            P2k16,
+            AuthzService,
+            CoreDataService
+        ) {
             const self = this;
             self.currentProfile = P2k16.currentProfile;
             self.currentAccount = P2k16.currentAccount;
 
             self.logout = ($event) => {
                 $event.preventDefault();
-                AuthzService.logOut().then(() => $location.url("/?random=" + Date.now()));
+                AuthzService.logOut().then(() =>
+                    $location.url("/?random=" + Date.now())
+                );
             };
 
             self.manageBilling = () => {
-                CoreDataService.membership_customer_portal({ baseUrl: window.location.origin }).then(res => {
+                CoreDataService.membership_customer_portal({
+                    baseUrl: window.location.origin,
+                }).then((res) => {
                     window.location.href = res.data.portalUrl;
                 });
             };
@@ -374,56 +510,70 @@
         }
 
         return {
-            restrict: 'E',
-            scope: { active: '@' },
+            restrict: "E",
+            scope: { active: "@" },
             controller: p2k16HeaderController,
-            controllerAs: 'header',
-            templateUrl: p2k16_resources.p2k16_header_html
-        }
+            controllerAs: "header",
+            templateUrl: p2k16_resources.p2k16_header_html,
+        };
     }
 
     function p2k16EntityInfo() {
         return {
-            restrict: 'E',
-            scope: { entity: '=' },
+            restrict: "E",
+            scope: { entity: "=" },
             controller: function () {
-                this.show = entity => entity && entity.createdAt && entity.updatedAt && entity.createdAt.substring(0, 19) !== entity.updatedAt.substring(0, 19);
+                this.show = (entity) =>
+                    entity &&
+                    entity.createdAt &&
+                    entity.updatedAt &&
+                    entity.createdAt.substring(0, 19) !==
+                    entity.updatedAt.substring(0, 19);
             },
             controllerAs: "ctrl",
             template: `
                 <p ng-if="entity.id" class="text-muted entity-info">
                     Created by {{ entity.createdBy }} at {{ entity.createdAt | date:'medium' }}
                     <span ng-if="ctrl.show(entity)">, last updated by {{ entity.updatedBy }} at {{ entity.updatedAt | date:'medium' }}</span>.
-                </p>`
-        }
+                </p>`,
+        };
     }
-    function P2k16HttpInterceptor($rootScope, $q, P2k16, Circles, BadgeDescriptions) {
-        const findCollection = name => {
+    function P2k16HttpInterceptor(
+        $rootScope,
+        $q,
+        P2k16,
+        Circles,
+        BadgeDescriptions
+    ) {
+        const findCollection = (name) => {
             if (name === "circles") return Circles;
             if (name === "badge-descriptions") return BadgeDescriptions;
-        }
+        };
 
         return {
-            response: res => {
+            response: (res) => {
                 if (res && res.data && res.data._controls) {
-                    res.data._controls.forEach(c => {
+                    res.data._controls.forEach((c) => {
                         const collection = findCollection(c.collection);
                         collection.executeControl(c);
                     });
                 }
                 return res;
             },
-            responseError: rejection => {
-                if (rejection.headers("content-type") === "application/vnd.error+json" && rejection.data.message) {
+            responseError: (rejection) => {
+                if (
+                    rejection.headers("content-type") === "application/vnd.error+json" &&
+                    rejection.data.message
+                ) {
                     P2k16.addErrors(rejection.data.message);
                     return $q.defer().promise;
                 }
                 return $q.reject(rejection);
-            }
-        }
+            },
+        };
     }
     function YesNoFilter() {
-        return b => b ? 'Yes' : 'No';
+        return (b) => (b ? "Yes" : "No");
     }
 
     /**
@@ -432,11 +582,17 @@
      * @param recent_events
      * @param membership_tiers
      */
-    function FrontPageController(DoorDataService, P2k16, recent_events, membership_tiers, CoreDataService) {
+    function FrontPageController(
+        DoorDataService,
+        P2k16,
+        recent_events,
+        membership_tiers,
+        CoreDataService
+    ) {
         const self = this;
 
         self.openDoors = (doors) => {
-            DoorDataService.open_door({ doors }).then(res => {
+            DoorDataService.open_door({ doors }).then((res) => {
                 const msg = res.message || "The door is open";
                 P2k16.addInfos(msg);
             });
@@ -444,13 +600,18 @@
 
         self.signup = (tier) => {
             const { priceId } = tier;
-            CoreDataService.membership_create_checkout_session({ baseUrl: window.location.origin, priceId }).then(res => {
+            CoreDataService.membership_create_checkout_session({
+                baseUrl: window.location.origin,
+                priceId,
+            }).then((res) => {
                 window.stripe.redirectToCheckout(res.data);
             });
         };
 
         self.manageBilling = () => {
-            CoreDataService.membership_customer_portal({ baseUrl: window.location.origin }).then(res => {
+            CoreDataService.membership_customer_portal({
+                baseUrl: window.location.origin,
+            }).then((res) => {
                 window.location.href = res.data.portalUrl;
             });
         };
@@ -481,7 +642,9 @@
         }
     }
 
-    function AboutController() { this.gitRevision = window.gitRevision; }
+    function AboutController() {
+        this.gitRevision = window.gitRevision;
+    }
 
     /**
      * @param $scope
@@ -491,7 +654,13 @@
      * @param {LabelService} LabelService
      * @constructor
      */
-    function MyProfileController($scope, P2k16, CoreDataService, badgeDescriptions, LabelService) {
+    function MyProfileController(
+        $scope,
+        P2k16,
+        CoreDataService,
+        badgeDescriptions,
+        LabelService
+    ) {
         const self = this;
 
         P2k16.accountListeners.add($scope, (newValue) => {
@@ -499,35 +668,55 @@
             updateCircles(newValue);
         });
 
-        const updateCircles = (account) => self.circles = Object.values(account.circles);
-        const updateBadges = (account) => self.badges = Object.values(account.badges);
+        const updateCircles = (account) =>
+            (self.circles = Object.values(account.circles));
+        const updateBadges = (account) =>
+            (self.badges = Object.values(account.badges));
 
         self.changePassword = () => {
-            CoreDataService.service_set_password(self.changePasswordForm).then(res => {
-                const msg = res.message || "Password changed";
-                P2k16.addInfos(msg);
-            });
+            CoreDataService.service_set_password(self.changePasswordForm).then(
+                (res) => {
+                    const msg = res.message || "Password changed";
+                    P2k16.addInfos(msg);
+                }
+            );
+        };
+
+        self.changeUserName = () => {
+            CoreDataService.service_set_username(self.profileForm).then(
+                (res) => {
+                    const msg = res.message || "Username Updated to:" + self.profileForm.username
+                    P2k16.addInfos(msg);
+
+                }
+            )
         };
 
         self.printBoxLabel = () => {
-            LabelService.print_box_label({ user: P2k16.currentAccount().id }).then(res => {
-                const msg = res.message || 'Label sent to printer';
-                P2k16.addInfos(msg);
-            });
+            LabelService.print_box_label({ user: P2k16.currentAccount().id }).then(
+                (res) => {
+                    const msg = res.message || "Label sent to printer";
+                    P2k16.addInfos(msg);
+                }
+            );
         };
 
         self.saveProfile = () => {
-            CoreDataService.service_edit_profile(self.profileForm).then(res => {
+            CoreDataService.service_edit_profile(self.profileForm).then((res) => {
                 const msg = res.message || "Profile saved";
                 P2k16.addInfos(msg);
             });
         };
 
         self.getCurrentStatus = () => {
-            LabelService.get_label_active().then(res => {
-                self.isLabelActive = res.data.status;
-                $scope.$applyAsync();
-            }).catch(error => console.error("Error getting current label status:", error));
+            LabelService.get_label_active()
+                .then((res) => {
+                    self.isLabelActive = res.data.status;
+                    $scope.$applyAsync();
+                })
+                .catch((error) =>
+                    console.error("Error getting current label status:", error)
+                );
         };
 
         self.badges = [];
@@ -535,7 +724,8 @@
         self.newBadge = {};
         self.descriptions = badgeDescriptions;
         self.changePasswordForm = {};
-        self.profileForm = { phone: P2k16.currentProfile().account.phone };
+        self.changeUserNameForm = {}
+        self.profileForm = { phone: P2k16.currentProfile().account.phone, username: P2k16.currentProfile().account.username };
         self.isLabelActive = false;
 
         updateBadges(P2k16.currentProfile());
@@ -543,12 +733,20 @@
         self.getCurrentStatus();
     }
 
-    function ToolFrontPageController(ToolDataService, $scope, P2k16, tools, recent_events) {
+    function ToolFrontPageController(
+        ToolDataService,
+        $scope,
+        P2k16,
+        tools,
+        recent_events
+    ) {
         const self = this;
 
         const update = (data) => {
             self.tools = data;
-            self.my_tools = self.tools.filter(tool => tool.checkout.account == self.my_account);
+            self.my_tools = self.tools.filter(
+                (tool) => tool.checkout.account == self.my_account
+            );
         };
 
         self.debounce = 0;
@@ -564,16 +762,24 @@
             };
         };
 
-        const checkoutTool = tool => {
-            ToolDataService.checkout_tool({ tool: tool.id }).then(res => update(res.data));
+        const checkoutTool = (tool) => {
+            ToolDataService.checkout_tool({ tool: tool.id }).then((res) =>
+                update(res.data)
+            );
         };
 
-        const checkinTool = tool => {
-            ToolDataService.checkin_tool({ tool: tool.id }).then(res => update(res.data));
+        const checkinTool = (tool) => {
+            ToolDataService.checkin_tool({ tool: tool.id }).then((res) =>
+                update(res.data)
+            );
         };
 
-        self.checkoutToolConfirm = tool => {
-            if (window.confirm(`Do you really want to checkout ${tool.name}? This may destroy a job in progress!`)) {
+        self.checkoutToolConfirm = (tool) => {
+            if (
+                window.confirm(
+                    `Do you really want to checkout ${tool.name}? This may destroy a job in progress!`
+                )
+            ) {
                 debounce(checkoutTool, 300)(tool);
             }
         };
@@ -582,8 +788,8 @@
         self.checkinTool = debounce(checkinTool, 300);
     }
     /*************************************************************************
-      * Badges
-      */
+     * Badges
+     */
 
     /**
      * @param {CoreDataService} CoreDataService
@@ -592,13 +798,21 @@
      * @param badgeDescriptions
      * @param recentBadges
      */
-    function BadgesFrontPageController(CoreDataService, BadgeDataService, P2k16, badgeDescriptions, recentBadges) {
+    function BadgesFrontPageController(
+        CoreDataService,
+        BadgeDataService,
+        P2k16,
+        badgeDescriptions,
+        recentBadges
+    ) {
         const self = this;
         self.badgeDescriptions = badgeDescriptions;
         self.recentBadges = recentBadges;
 
         self.createBadge = () => {
-            BadgeDataService.create(self.newBadge).then(P2k16.refreshAccountFromResponse);
+            BadgeDataService.create(self.newBadge).then(
+                P2k16.refreshAccountFromResponse
+            );
         };
     }
 
@@ -613,14 +827,19 @@
      * @param summary
      * @param badgeDescriptions
      */
-    function UserDetailController(CoreDataService, BadgeDataService, P2k16, summary, badgeDescriptions) {
+    function UserDetailController(
+        CoreDataService,
+        BadgeDataService,
+        P2k16,
+        summary,
+        badgeDescriptions
+    ) {
         const self = this;
         self.account = summary.account;
         self.badges = summary.badges;
         self.summary = summary;
         self.badgeDescriptions = badgeDescriptions;
     }
-
 
     /*************************************************************************
      * Admin
@@ -629,8 +848,7 @@
     /**
      * @constructor
      */
-    function AdminController() {
-    }
+    function AdminController() { }
 
     /**
      * @param {CoreDataService} CoreDataService
@@ -649,12 +867,17 @@
      * @param {SmartCache} circles
      * @constructor
      */
-    function AdminAccountDetailController($http, CoreDataService, account, circles) {
+    function AdminAccountDetailController(
+        $http,
+        CoreDataService,
+        account,
+        circles
+    ) {
         var self = this;
 
         self.account = account;
-        self.circles = circles.values.filter(
-            circle => circle.memberIds.includes(self.account.id)
+        self.circles = circles.values.filter((circle) =>
+            circle.memberIds.includes(self.account.id)
         );
 
         self.comment = "";
@@ -687,14 +910,20 @@
      * @param circle
      * @constructor
      */
-    function AdminCircleDetailController($location, $uibModal, CoreDataService, circles, circle) {
+    function AdminCircleDetailController(
+        $location,
+        $uibModal,
+        CoreDataService,
+        circles,
+        circle
+    ) {
         const self = this;
         self.isNew = !circle.id;
         self.circleName = circle.id ? circle.name : "New circle";
         self.addCircleForm = { commentRequiredForMembership: false };
         self.addMemberForm = { username: "", comment: "" };
 
-        const update = data => {
+        const update = (data) => {
             self.circle = data;
             if (!self.members) self.members = [];
             if (data._embedded) {
@@ -705,53 +934,68 @@
             }
 
             if (self.circle.adminCircle) {
-                self.adminCircle = circles.by_key[self.circle.adminCircle];
+                self.adminCircle = circles[self.circle.adminCircle];
             }
         };
 
         update(circle);
 
-        self.createCircle = () => CoreDataService.create_circle(self.addCircleForm).then(res => $location.url("/admin/circle/" + res.data.id));
+        self.createCircle = () =>
+            CoreDataService.create_circle(self.addCircleForm).then((res) =>
+                $location.url("/admin/circle/" + res.data.id)
+            );
 
-        self.removeMember = accountId => {
+        self.removeMember = (accountId) => {
             const form = {
                 accountId: accountId,
-                circleId: self.circle.id
+                circleId: self.circle.id,
             };
-            CoreDataService.remove_account_from_circle(form).then(res => update(res.data));
+            CoreDataService.remove_account_from_circle(form).then((res) =>
+                update(res.data)
+            );
         };
 
         self.addMember = () => {
             const form = {
                 accountUsername: self.addMemberForm.username,
                 circleId: self.circle.id,
-                comment: self.addMemberForm.comment
+                comment: self.addMemberForm.comment,
             };
             self.addMemberForm.username = ""; // Keep the comment to make it easier to do bulk adds
-            CoreDataService.add_account_to_circle(form).then(res => update(res.data));
+            CoreDataService.add_account_to_circle(form).then((res) =>
+                update(res.data)
+            );
         };
 
-        self.removeCircle = circle => {
-            $uibModal.open({
-                animation: true,
-                templateUrl: 'admin-circle-detail/remove-circle-modal.html',
-                controller: function ($uibModalInstance) {
-                    const self = this;
-                    self.ok = () => $uibModalInstance.close(circle);
-                    self.cancel = () => $uibModalInstance.dismiss('cancel');
-                },
-                controllerAs: 'ctrl'
-            }).result.then(() => {
-                CoreDataService.remove_circle(circle.id).then(() => {
-                    circles.remove(circle);
-                    $location.url("/admin/circle");
-                });
-            }, () => console.log("Remove aborted"));
+        self.removeCircle = (circle) => {
+            $uibModal
+                .open({
+                    animation: true,
+                    templateUrl: "admin-circle-detail/remove-circle-modal.html",
+                    controller: function ($uibModalInstance) {
+                        const self = this;
+                        self.ok = () => $uibModalInstance.close(circle);
+                        self.cancel = () => $uibModalInstance.dismiss("cancel");
+                    },
+                    controllerAs: "ctrl",
+                })
+                .result.then(
+                    () => {
+                        CoreDataService.remove_circle(circle.id).then(() => {
+                            circles.remove(circle);
+                            $location.url("/admin/circle");
+                        });
+                    },
+                    () => console.log("Remove aborted")
+                );
         };
 
         self.selfAdminSelected = () => {
-            if (!self.addCircleForm.comment && self.addCircleForm.commentRequiredForMembership) {
-                self.addCircleForm.comment = 'Initial admin';
+            if (
+                !self.addCircleForm.comment &&
+                self.addCircleForm.commentRequiredForMembership
+            ) {
+                self.addCircleForm.comment = "Initial admin";
             }
         };
     }
@@ -763,13 +1007,18 @@
      * @param {CoreDataService} CoreDataService
      * @constructor
      */
-    function AdminCompanyDetailController($location, profiles, company, CoreDataService) {
+    function AdminCompanyDetailController(
+        $location,
+        profiles,
+        company,
+        CoreDataService
+    ) {
         const self = this;
         let isNew;
 
         self.profiles = profiles;
 
-        const setCompany = company => {
+        const setCompany = (company) => {
             self.company = angular.copy(company);
             isNew = !self.company.id;
             self.title = isNew ? "New company" : self.company.name;
@@ -778,9 +1027,11 @@
         setCompany(company);
 
         self.save = () => {
-            const q = self.company.id ? CoreDataService.data_company_update(self.company) : CoreDataService.data_company_add(self.company);
+            const q = self.company.id
+                ? CoreDataService.data_company_update(self.company)
+                : CoreDataService.data_company_add(self.company);
 
-            q.then(res => {
+            q.then((res) => {
                 if (isNew) {
                     $location.url("/admin/company/" + res.data.id);
                 } else {
@@ -790,19 +1041,26 @@
             });
         };
 
-        self.existingEmployeeFilter = profile => (_.findIndex(self.company.employees, { account: { username: profile.account.username } }) === -1);
+        self.existingEmployeeFilter = (profile) => {
+            const targetUsername = profile.account.username;
+            return !self.company.employees.some(
+                (employee) => employee.account.username === targetUsername
+            );
+        };
 
         self.removeEmployee = (event, employee) => {
             event.preventDefault();
-            CoreDataService.data_company_remove_employee(company.id, { accountId: employee.account_id })
-                .then(res => setCompany(res.data));
+            CoreDataService.data_company_remove_employee(company.id, {
+                accountId: employee.account_id,
+            }).then((res) => setCompany(res.data));
         };
 
         self.addEmployee = (event, profile) => {
             event.preventDefault();
-            self.query = '';
-            CoreDataService.data_company_add_employee(company.id, { accountId: profile.account.id })
-                .then(res => setCompany(res.data));
+            self.query = "";
+            CoreDataService.data_company_add_employee(company.id, {
+                accountId: profile.account.id,
+            }).then((res) => setCompany(res.data));
         };
     }
 
@@ -820,7 +1078,7 @@
         const self = this;
         self.isNew = !tool.id;
 
-        const setTool = tool => {
+        const setTool = (tool) => {
             self.tool = angular.copy(tool);
             isNew = !self.tool.id;
             self.title = isNew ? "New tool" : self.tool.name;
@@ -829,9 +1087,11 @@
         setTool(tool);
 
         self.save = () => {
-            const q = self.tool.id ? ToolDataService.data_tool_update(self.tool) : ToolDataService.data_tool_add(self.tool);
+            const q = self.tool.id
+                ? ToolDataService.data_tool_update(self.tool)
+                : ToolDataService.data_tool_add(self.tool);
 
-            q.then(res => {
+            q.then((res) => {
                 if (isNew) {
                     $location.url("/admin/tool/" + res.data.id);
                 } else {
@@ -850,10 +1110,17 @@
      * @param {AuthzService} AuthzService
      * @constructor
      */
-    function UnauthenticatedController($location, $window, $uibModal, P2k16, CoreDataService, AuthzService) {
+    function UnauthenticatedController(
+        $location,
+        $window,
+        $uibModal,
+        P2k16,
+        CoreDataService,
+        AuthzService
+    ) {
         const self = this;
         self.signupForm = {};
-        self.loginForm = { 'username': null, 'password': null };
+        self.loginForm = { username: null, password: null };
         self.showSignUpForm = false;
 
         self.registerAccount = () => {
@@ -869,29 +1136,31 @@
             });
         };
 
-        self.toggleSignupForm = () => self.showSignUpForm = !self.showSignUpForm;
+        self.toggleSignupForm = () => (self.showSignUpForm = !self.showSignUpForm);
 
         self.resetPassword = () => {
             const username = self.loginForm.username;
             const modalInstance = $uibModal.open({
                 animation: true,
-                templateUrl: 'unauthenticated/reset-password-modal.html',
+                templateUrl: "unauthenticated/reset-password-modal.html",
                 controller: function ($uibModalInstance) {
                     const self = this;
                     self.username = username;
                     self.ok = () => {
-                        CoreDataService.service_start_reset_password({ username: self.username }).then(res => {
+                        CoreDataService.service_start_reset_password({
+                            username: self.username,
+                        }).then((res) => {
                             self.message = res.data.message;
                         });
                     };
-                    self.dismiss = () => $uibModalInstance.dismiss('dismissed');
-                    self.cancel = () => $uibModalInstance.dismiss('cancel');
+                    self.dismiss = () => $uibModalInstance.dismiss("dismissed");
+                    self.cancel = () => $uibModalInstance.dismiss("cancel");
                 },
-                controllerAs: 'ctrl'
+                controllerAs: "ctrl",
             });
 
-            modalInstance.result.then(values => { }, angular.identity);
-        }
+            modalInstance.result.then((values) => { }, angular.identity);
+        };
     }
 
     function valueMapper(entity) {
@@ -900,11 +1169,18 @@
     }
 
     function configSmartCaches($provide) {
-        $provide.factory("Circles", ['$q', $q => new SmartCache($q, "Circle", valueMapper)]);
-        $provide.factory("BadgeDescriptions", ['$q', $q => new SmartCache($q, "BadgeDescription", valueMapper)]);
+        $provide.factory("Circles", [
+            "$q",
+            ($q) => new SmartCache($q, "Circle", valueMapper),
+        ]);
+        $provide.factory("BadgeDescriptions", [
+            "$q",
+            ($q) => new SmartCache($q, "BadgeDescription", valueMapper),
+        ]);
     }
 
-    angular.module('p2k16.app', ['ngRoute', 'ui.bootstrap'])
+    angular
+        .module("p2k16.app", ["ngRoute", "ui.bootstrap"])
         .config(configSmartCaches)
         .config(config)
         .run(run)

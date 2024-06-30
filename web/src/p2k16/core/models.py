@@ -179,6 +179,9 @@ class Account(P2k16Mixin, CreatedAtMixin, UpdatedAtMixin, db.Model):
     def display_name(self):
         return self.username
 
+    def set_username(self, new_username):
+        self.username = new_username
+
     def create_new_reset_token(self):
         self.reset_token = str(uuid.uuid4())
         self.reset_token_validity = datetime.now() + timedelta(hours=24)

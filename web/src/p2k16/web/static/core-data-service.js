@@ -213,6 +213,14 @@ function CoreDataService($http) {
         return $http(req);
     };
 
+    this.service_set_username = function (payload) {
+        var req = {};
+        req.method = 'POST';
+        req.url = '/service/edit-username';
+        req.data = payload;
+        return $http(req);
+    };
+
     this.recent_events = function () {
         var req = {};
         req.method = 'GET';

@@ -198,8 +198,15 @@ def edit_profile(account: Account, new_phone: str):
     logger.info('Updating profile for account={}'.format(account))
 
 
+def change_username(account: Account, new_username: str):
+    account.username = new_username
+    logger.info(f'Updating name for account={account.username} to {new_username}')
+
+
 # This function raises technical exceptions as a last resort. Methods using this function should check the token or
 # password before calling this.
+
+
 def set_password(account: Account, new_password: str, old_password: Optional[str] = None,
                  reset_token: Optional[str] = None):
     if reset_token is not None:
