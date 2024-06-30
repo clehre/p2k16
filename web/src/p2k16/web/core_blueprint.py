@@ -331,7 +331,10 @@ def register_account():
                                             request.json["password"],
                                             request.json.get("phone", None))
     db.session.commit()
-    logger.info("new account: {}/{}".format(u.username, u.id))
+    service_authz_login()
+    logger.info(f"new account: {u.username}/{u.id}")
+    logger.info(f"You can now become a paying member and get door access!")
+
     return jsonify({})
 
 

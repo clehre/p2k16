@@ -1166,7 +1166,8 @@
         self.registerAccount = () => {
             CoreDataService.register_account(self.signupForm).then(() => {
                 self.signupForm = {};
-                P2k16.addInfos("Account created, please log in.");
+                $window.location.href = "/";
+                P2k16.addInfos("Account created, please log in with your username and password");
             });
         };
 
