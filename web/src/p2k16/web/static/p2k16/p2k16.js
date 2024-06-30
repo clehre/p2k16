@@ -764,7 +764,7 @@
             );
         };
 
-        self.debounce = 0;
+        self.debounce = 400; // prevents most doubleclicks. most people will see the warning before they click again
         self.recent_events = recent_events;
         self.my_account = P2k16.currentAccount().id;
         update(tools);
@@ -772,6 +772,7 @@
         const debounce = (func, wait) => {
             let timeout;
             return (...args) => {
+                P2k16.addInfos(`Waiting for ${args[0].name} to respond`)
                 clearTimeout(timeout);
                 timeout = setTimeout(() => func.apply(this, args), wait);
             };
@@ -780,7 +781,7 @@
         const checkoutTool = (tool) => {
             ToolDataService.checkout_tool({ tool: tool.id }).then((res) =>
                 update(res.data)
-            );
+            )
         };
 
         const checkinTool = (tool) => {
@@ -795,12 +796,12 @@
                     `Do you really want to checkout ${tool.name}? This may destroy a job in progress!`
                 )
             ) {
-                debounce(checkoutTool, 300)(tool);
+                debounce(checkoutTool, self.debounce)(tool);
             }
         };
 
-        self.checkoutTool = debounce(checkoutTool, 300);
-        self.checkinTool = debounce(checkinTool, 300);
+        self.checkoutTool = debounce(checkoutTool, self.debounce);
+        self.checkinTool = debounce(checkinTool, self.debounce);
     }
     /*************************************************************************
      * Badges
