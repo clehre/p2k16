@@ -17,16 +17,23 @@
     </div>
     <br>
   </div>
-
   <form class="form-horizontal">
     <div class="form-group">
       <div class="col-sm-6 col-sm-offset-3">
-        <input type="text" class="form-control" id="title" ng-model="ctrl.newBadge.title" placeholder="Badge (free text)">
+        <input type="text" class="form-control" id="title" ng-model="ctrl.newBadge.title"
+          placeholder="Badge (free text)" list="badge-titles">
+        <datalist id="badge-titles">
+          <option ng-repeat="title in ctrl.getBadgeList()" value="{{title}}">
+        </datalist>
       </div>
     </div>
     <div class="form-group">
       <div class="col-sm-6 col-sm-offset-3">
-        <input type="text" class="form-control" id="title" ng-model="ctrl.newBadge.recipient" placeholder="Recipient (username)">
+        <input type="text" class="form-control" id="recipient" ng-model="ctrl.newBadge.recipient"
+          placeholder="{{ctrl.getUser()}}" list="users-list">
+        <datalist id="users-list">
+          <option ng-repeat="user in ctrl.getUserList()" value="{{user}}">
+        </datalist>
       </div>
       <div class="col-sm-6 col-sm-offset-3 text-center">
         <small style="color: gray"><br>Leave "Recipient" blank to assign to yourself</small>
@@ -39,7 +46,9 @@
     </div>
   </form>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
   <section class="col-md-6" ng-if="ctrl.recentBadges.length > 0">
     <h3>Recent events</h3>
@@ -47,10 +56,12 @@
       <li ng-repeat="b in ctrl.recentBadges" ng-init="bd = ctrl.badgeDescriptions[b.description_id]">
         <span class="label label-success">{{ bd.title }}</span> awarded to
         <a ng-href="#!/user/{{ b.account_id }}">{{ b.account_username }}</a><span
-           ng-if="b.awarded_by_id != b.account_id"> by <em style="color: gray;">{{ b.awarded_by_username }}</em></span>
+          ng-if="b.awarded_by_id != b.account_id"> by <em style="color: gray;">{{ b.awarded_by_username }}</em></span>
       </li>
     </ul>
-    <div class="col-sm-12"><hr></div>
+    <div class="col-sm-12">
+      <hr>
+    </div>
   </section>
 
   <section class="col-md-6">
@@ -62,7 +73,9 @@
         <!--<span ng-if="!bd.description">Boo, missing description :'(</span>-->
       </li>
     </ul>
-    <div class="col-sm-12"><hr></div>
+    <div class="col-sm-12">
+      <hr>
+    </div>
   </section>
 
 </div>

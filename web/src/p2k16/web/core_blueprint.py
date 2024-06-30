@@ -370,6 +370,12 @@ def _data_profile_list(full):
     return jsonify(profiles)
 
 
+@registry.route("/data/userlist")
+def userlist():
+    accounts = [a.username for a in Account.all_user_accounts()]  # type:Mapping[String]
+    return jsonify(accounts)
+
+
 @registry.route("/data/account/<int:account_id>")
 def data_account(account_id):
     account = Account.find_account_by_id(account_id)

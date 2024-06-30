@@ -360,7 +360,7 @@
         }
 
         function refreshAccount(updated) {
-            Object.merge(self.profile, updated);
+            _.merge(self.profile, updated);
             self.accountListeners.notify(self.profile);
         }
 
@@ -727,7 +727,6 @@
         self.changeUserNameForm = {}
         self.profileForm = { phone: P2k16.currentProfile().account.phone, username: P2k16.currentProfile().account.username };
         self.isLabelActive = false;
-
         updateBadges(P2k16.currentProfile());
         updateCircles(P2k16.currentProfile());
         self.getCurrentStatus();
@@ -808,6 +807,30 @@
         const self = this;
         self.badgeDescriptions = badgeDescriptions;
         self.recentBadges = recentBadges;
+
+        // Initialize the userList as an empty array
+        self.userList = [];
+
+        // Fetch the user list and update self.userList when resolved
+        CoreDataService.userlist().then((res) => {
+            self.userList = res.data;
+        });
+
+        self.getUser = () => {
+            return P2k16.currentAccount().name || "";
+        };
+
+        self.badgeList = [];
+
+        self.getBadgeList = () => {
+            self.badgeList = Object.values(badgeDescriptions).map(badge => badge.title);
+            return self.badgeList;
+        };
+
+        self.getUserList = () => {
+            console.log(self.userList); // This will log the resolved user list
+            return self.userList;
+        };
 
         self.createBadge = () => {
             BadgeDataService.create(self.newBadge).then(
