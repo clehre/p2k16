@@ -23,42 +23,54 @@
     <table class="table tools-buttons-table">
       <tr ng-repeat="tool in ctrl.tools">
         <td class="text-center">
-          <button ng-if="tool.checkout.active && tool.checkout.account != ctrl.my_account" type="submit" class="btn btn-block btn-danger" ng-click="ctrl.checkoutToolConfirm(tool)" id="{{tool.name}}">
+          <button ng-if="tool.checkout.active && tool.checkout.account != ctrl.my_account" type="submit"
+            class="btn btn-block btn-danger" ng-click="ctrl.checkoutToolConfirm(tool)"
+            ng-disabled="ctrl.isProcessing(tool)" id="{{tool.name}}">
             <strong>{{tool.description}}</strong>
             <br>
             <small class="text-center">{{tool.checkout.username}} - {{tool.checkout.started | date:'short'}}</small>
           </button>
-          <button ng-if="tool.checkout.active && tool.checkout.account == ctrl.my_account" type="submit" class="btn btn-default btn-block" ng-click="ctrl.checkinTool(tool)" id="{{tool.name}}">
+          <button ng-if="tool.checkout.active && tool.checkout.account == ctrl.my_account" type="submit"
+            class="btn btn-default btn-block" ng-click="ctrl.checkinTool(tool)" ng-disabled="ctrl.isProcessing(tool)"
+            id="{{tool.name}}">
             <strong>{{tool.description}}</strong>
             <br>
             <small class="text-center">{{tool.checkout.username}} - {{tool.checkout.started | date:'short'}}</small>
           </button>
-          <button ng-if="!tool.checkout.active" type="submit" class="btn btn-default btn-block" ng-click="ctrl.checkoutTool(tool)" id="{{tool.name}}">
+          <button ng-if="!tool.checkout.active" type="submit" class="btn btn-default btn-block"
+            ng-click="ctrl.checkoutTool(tool)" ng-disabled="ctrl.isProcessing(tool)" id="{{tool.name}}">
             <span>{{tool.description}}</span>
             <br>
             <small style="color: green">Available</small>
           </button>
         </td>
-      </div>
+      </tr>
     </table>
   </form>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
   <section ng-if="ctrl.recent_events.length > 0">
     <h3>Recent events</h3>
     <ul class="no-padding">
       <li ng-repeat="e in ctrl.recent_events">
         <span ng-switch="e.domain + '-' + e.name">
-          <span ng-switch-when="tool-checkout">{{ e.created_at | date:'short' }} - <em style="color: red">{{ e.tool_name }}</em> - <a href="#!/user/{{ e.created_by }}">{{ e.created_by_username }}</a> checked out
+          <span ng-switch-when="tool-checkout">{{ e.created_at | date:'short' }} - <em style="color: red">{{ e.tool_name
+              }}</em> - <a href="#!/user/{{ e.created_by }}">{{ e.created_by_username }}</a> checked out
           </span>
-          <span ng-switch-when="tool-checkin">{{ e.created_at | date:'short' }} - <em style="color: green">{{ e.tool_name }}</em> - <a href="#!/user/{{ e.created_by }}">{{ e.created_by_username }}</a> checked in
+          <span ng-switch-when="tool-checkin">{{ e.created_at | date:'short' }} - <em style="color: green">{{
+              e.tool_name
+              }}</em> - <a href="#!/user/{{ e.created_by }}">{{ e.created_by_username }}</a> checked in
           </span>
         </span>
       </li>
     </ul>
   </section>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
 </div>

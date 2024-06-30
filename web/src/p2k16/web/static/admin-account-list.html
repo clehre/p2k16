@@ -2,26 +2,28 @@
 
 <div class="container">
   <h1>Accounts</h1>
-  <label>Show only paying members or company employees <input type="checkbox" ng-model="accountFilter.active_member"></label><br>
+  <label>Show only paying members or company employees <input type="checkbox"
+      ng-model="accountFilter.active_member"></label><br>
 
   <table class="table">
     <thead>
-    <tr>
-      <th class="col-sm-3">username</th>
-      <th class="col-sm-4">email</th>
-      <th class="col-sm-4">name</th>
-      <th class="col-sm-1"></th>
-    </tr>
+      <tr>
+        <th class="col-sm-3">username</th>
+        <th class="col-sm-4">email</th>
+        <th class="col-sm-4">name</th>
+        <th class="col-sm-1"></th>
+      </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="p in ctrl.profiles | orderBy:'account.id'" ng-if="accountFilter.active_member ? p.is_paying_member || p.is_employed : true">
-      <td>{{ p.account.username }}</td>
-      <td>{{ p.account.email }}</td>
-      <td>{{ p.account.name }}</td>
-      <td>
-        <a href="#!/admin/account/{{ p.account.id }}">show</a>
-      </td>
-    </tr>
+      <tr ng-repeat="p in ctrl.profiles | orderBy:'account.id'"
+        ng-if="accountFilter.active_member ? p.is_paying_member || p.is_employed : true">
+        <td>{{ p.account.username }}</td>
+        <td>{{ p.account.email }}</td>
+        <td>{{ p.account.name }}</td>
+        <td>
+          <a href="#!/admin/account/{{ p.account.id }}">show</a>
+        </td>
+      </tr>
     </tbody>
   </table>
 

@@ -1,3 +1,4 @@
+from p2k16.web import badge_blueprint, core_blueprint, door_blueprint, tool_blueprint, membership_blueprint, label_blueprint, api_blueprint
 import logging
 import os
 from datetime import date
@@ -82,7 +83,8 @@ def _handle_p2k16_exception(msg, ex, is_user):
 def handle_sqlalchemy_error(error: SQLAlchemyError):
     if isinstance(error, NoResultFound):
         # This happens when Foo.query...one() is called and the object is not found.
-        msg = "Object not found"
+        msg = f"{error} Object not found"
+
         status_code = 404
     else:
         # Handle any other SQLAlchemy error as 500 errors
@@ -100,9 +102,9 @@ def handle_sqlalchemy_error(error: SQLAlchemyError):
 def handle_generic_http_code(e: werkzeug.exceptions.HTTPException):
     # msg = "{}: {}".format(e.name, e.description)
     if hasattr(e, "name") and hasattr(e, "description"):
-        msg = "{}: {}".format(e.name, e.description)
+        msg = f"{e.name}: {e.description}"
     else:
-        msg = "Unknown exception: {}".format(type(e))
+        msg = f"Unknown exception: {type(e)}"
 
     response = flask.jsonify({"message": msg})
     response.status_code = e.code
@@ -119,7 +121,7 @@ for e in [werkzeug.exceptions.Forbidden,
 
 @app.errorhandler(Exception)
 def handle_all_other_exceptions(e: Exception):
-    logger.warning("Unknown exception type: {}".format(type(e)), exc_info=e)
+    logger.warning(f"Unknown exception type: {type(e)}", exc_info=e)
 
     response = flask.jsonify({"message": "Unknown internal error"})
     response.status_code = 500
@@ -197,7 +199,6 @@ app.config.door_client = door.create_client(app.config)
 app.config.tool_client = tool.create_client(app.config)
 app.config.label_client = label.create_client(app.config)
 
-from p2k16.web import badge_blueprint, core_blueprint, door_blueprint, tool_blueprint, membership_blueprint, label_blueprint, api_blueprint
 
 # Inject stripe config parameters
 membership_blueprint.setup_stripe(app.config)

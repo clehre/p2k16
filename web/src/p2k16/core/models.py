@@ -1,3 +1,6 @@
+from sqlalchemy import event
+from sqlalchemy_continuum import make_versioned
+from sqlalchemy_continuum.plugins import FlaskPlugin
 import crypt
 import enum
 import logging
@@ -15,11 +18,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 logger = logging.getLogger(__name__)
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 db = SQLAlchemy()
 
-from sqlalchemy_continuum.plugins import FlaskPlugin
-from sqlalchemy_continuum import make_versioned
 
 make_versioned(plugins=[FlaskPlugin()], user_cls=None)
 
@@ -442,8 +444,8 @@ class StripePayment(DefaultMixin, db.Model):
     @staticmethod
     def is_account_paying_member(account_id):
         return StripePayment.query. \
-                   filter(StripePayment.created_by_id == account_id,
-                          StripePayment.end_date >= (datetime.utcnow() - timedelta(days=1))).count() > 0
+            filter(StripePayment.created_by_id == account_id,
+                   StripePayment.end_date >= (datetime.utcnow() - timedelta(days=1))).count() > 0
 
 
 class StripeCustomer(DefaultMixin, db.Model):
@@ -501,10 +503,10 @@ class Company(DefaultMixin, db.Model):
     @staticmethod
     def is_account_employed(account_id: int) -> bool:
         return Company.query. \
-                   join(Company.employees). \
-                   filter(Company.active). \
-                   filter(CompanyEmployee.account_id == account_id) \
-                   .count() > 0
+            join(Company.employees). \
+            filter(Company.active). \
+            filter(CompanyEmployee.account_id == account_id) \
+            .count() > 0
 
 
 class CompanyEmployee(DefaultMixin, db.Model):
@@ -623,9 +625,6 @@ class ToolCheckout(DefaultMixin, db.Model):
     @staticmethod
     def find_by_tool(_tool) -> Optional['ToolCheckout']:
         return ToolCheckout.query.filter(ToolCheckout.tool_description_id == _tool.id).one_or_none()
-
-
-from sqlalchemy import event
 
 
 @event.listens_for(db.session, 'before_flush')

@@ -36,6 +36,7 @@ class OpenDoorEvent(object):
             "door": self.door
         }}
 
+
 class DoorClient(object):
     def __init__(self, cfg: Mapping[str, str]):
         if "MQTT_HOST" in cfg:
@@ -51,17 +52,15 @@ class DoorClient(object):
     def open_doors(self, account: Account, doors):
         can_open_door = authz_management.can_haz_door_access(account, doors)
         if not can_open_door:
-            f = "{} does not have an active membership, or lacks door circle membership"
-            raise P2k16UserException(f.format(account.display_name()))
+            raise P2k16UserException(f"{account.display_name()} does not have an active membership, or lacks door circle membership")
 
         if not event_management.has_opened_door(account):
             system = Account.find_account_by_username("system")
-            logger.info("First door opening for {}".format(account))
+            logger.info(f"First door opening for {account}")
             badge_management.create_badge(account, system, "first-door-opening")
 
         for door in doors:
-            lf = "Opening door. username={}, door={}, open_time={}"
-            logger.info(lf.format(account.username, door.key, door.open_time))
+            logger.info(f"Opening door. username={account.username}, door={door.key}, open_time={door.open_time}")
 
             event_management.save_event(OpenDoorEvent(door.key))
 
@@ -78,10 +77,12 @@ class DoorClient(object):
             else:
                 P2k16TechnicalException("Unknown kind of door")
 
+
 def create_client(cfg: Mapping[str, str]) -> DoorClient:
     return DoorClient(cfg)
 
 # dlock  #####################################################################
+
 
 class DlockDoor(object):
     def __init__(self, key, open_time, circles, name):
@@ -89,9 +90,10 @@ class DlockDoor(object):
         self.open_time = open_time
         self.circles = circles
         if name is None:
-            self.name = "Door: {}".format(key)
+            self.name = f"Door: {key}"
         else:
             self.name = name
+
 
 class DlockClient(object):
     def __init__(self, cfg: Mapping[str, str]):
@@ -102,9 +104,10 @@ class DlockClient(object):
         logger.info("dlock config: base_url={}, username={}".format(self.base_url, self.username))
 
     def open(self, door):
-        logger.info("Sending dlock request: {}: {}".format(door.key, door.open_time))
+        logger.info("Sending dlock request: {door.key}: {door.open_time}")
 
-        url = "{}/doors/{}/unlock".format(self.base_url, door.key)
+        url = f"{self.base_url}/doors/{door.key}/unlock"
+
         auth = (self.username, self.password)
         params = {"duration": str(door.open_time)}
 
@@ -117,6 +120,7 @@ class DlockClient(object):
 
 # MQTT  ######################################################################
 
+
 class MqttDoor(object):
     def __init__(self, key, open_time, circles, topic, name):
         self.key = key
@@ -127,6 +131,7 @@ class MqttDoor(object):
             self.name = "Door: {}".format(key)
         else:
             self.name = name
+
 
 class MqttClient(object):
     def __init__(self, cfg: Mapping[str, str]):
@@ -153,13 +158,14 @@ class MqttClient(object):
         topic = self.prefix + door.topic
         open_time = str(door.open_time)
 
-        logger.info("Sending MQTT message: {}: {}".format(topic, open_time))
+        logger.info("Sending MQTT message: {topic}: {open_time}")
         self._client.publish(topic, open_time)
 
 # Site-specific configuration  ###############################################
 
+
 _doors = [
-    DlockDoor(  "bv9-f2-entrance",  name="Entrance",
+    DlockDoor("bv9-f2-entrance",  name="Entrance",
               open_time=10, circles={"door"}),
 ]
 

@@ -8,14 +8,14 @@
       <!-- <label for="name" class="col-sm-3 control-label">Old password</label> -->
       <div class="col-sm-6 col-sm-offset-3">
         <input class="form-control" type="password" name="oldPassword" id="oldPassword"
-               ng-model="ctrl.changePasswordForm.oldPassword" placeholder="Old password"/>
+          ng-model="ctrl.changePasswordForm.oldPassword" placeholder="Old password" />
       </div>
     </div>
     <div class="form-group">
       <!-- <label for="name" class="col-sm-3 control-label">New password</label> -->
       <div class="col-sm-6 col-sm-offset-3">
         <input class="form-control" type="password" name="newPassword" id="newPassword"
-               ng-model="ctrl.changePasswordForm.newPassword" placeholder="New password"/>
+          ng-model="ctrl.changePasswordForm.newPassword" placeholder="New password" />
       </div>
     </div>
     <div class="form-group text-center">
@@ -26,7 +26,9 @@
     </div>
   </form>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
   <h2 class="text-center">Edit profile details</h2>
   <br>
@@ -34,13 +36,8 @@
     <div class="form-group">
       <!-- <label for="phone" class="col-sm-3 control-label">Phone number</label> -->
       <div class="col-sm-6 col-sm-offset-3">
-        <input class="form-control"
-               type="text"
-               name="phone"
-               id="phone"
-               placeholder="Phone"
-               ng-model="ctrl.profileForm.phone"
-               autocomplete="phone" />
+        <input class="form-control" type="text" name="phone" id="phone" placeholder="Phone"
+          ng-model="ctrl.profileForm.phone" autocomplete="phone" />
       </div>
       <div class="col-sm-6 col-sm-offset-3 text-center">
         <small style="color: gray"><br>Current phone: {{ ctrl.profileForm.phone }}</small>
@@ -53,7 +50,9 @@
     </div>
   </form>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
   <h2 class="text-center">Print box label</h2>
   <br>
@@ -71,14 +70,22 @@
         </ul>
       </div>
     </div>
-
     <div class="text-center">
-      <button class="btn btn-primary" ng-click="ctrl.printBoxLabel()">Print label</button>
+      <div ng-if="!ctrl.isLabelActive">
+        There is an issue with the QR Code printer
+        <br>
+        if you're not sure how to fix it, ask in <b>#helpdesk</b> in <a href="https://bitraf.slack.com"> Slack</a>
+        <hr>
+      </div>
+      <button ng-disabled="!ctrl.isLabelActive" class="btn btn-primary" ng-click="ctrl.printBoxLabel()">Print
+        label</button>
     </div>
 
   </form>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
   <h2 class="text-center">Awarded badges</h2>
   <br>
@@ -89,22 +96,26 @@
       </li>
     </ul>
     <p ng-hide="ctrl.badges.length" class="text-center">
-        Aaw, you don't have any badges yet.
+      Aaw, you don't have any badges yet.
     </p>
   </div>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
   <h2 class="text-center">Joined circles</h2>
   <br>
   <div class="col-sm-8 col-sm-offset-2">
     <ul ng-if="ctrl.circles.length" class="list-inline list-inline-badges">
-        <li ng-repeat="c in ctrl.circles">
-            <a href="#!/admin/circle/{{c.id}}"><span class="label label-default" >{{ c.name }}</span></a>
-        </li>
+      <li ng-repeat="c in ctrl.circles">
+        <a href="#!/admin/circle/{{c.id}}"><span class="label label-default">{{ c.name }}</span></a>
+      </li>
     </ul>
   </div>
 
-  <div class="col-sm-12"><hr></div>
+  <div class="col-sm-12">
+    <hr>
+  </div>
 
 </div>

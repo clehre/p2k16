@@ -16,9 +16,10 @@ box_label_form = {
     "type": "object",
     "properties": {
         "user": {"type": "integer"}
-        },
+    },
     "required": ["user"]
 }
+
 
 @registry.route('/service/label/print_box_label', methods=['POST'])
 @validate_schema(box_label_form)
@@ -26,7 +27,7 @@ box_label_form = {
 def print_box_label():
     a = flask_login.current_user.account
 
-    client = flask.current_app.config.label_client # type: LabelClient
+    client = flask.current_app.config.label_client  # type: LabelClient
 
     user = Account.find_account_by_id(request.json["user"])
 
@@ -45,5 +46,11 @@ def service():
 
     return content, {'Content-Type': 'application/javascript'}
 
+
 service.content = None
 
+
+@registry.route('/service/label/is_available', methods=['GET'])
+def get_label_active():
+    client = flask.current_app.config.label_client  # type: LabelClient
+    return jsonify({"status": client.get_status()})

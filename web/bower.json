@@ -17,7 +17,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "1.6.6",
+    "angular": "^1.8.3",
     "angular-i18n": "1.6.6",
     "angular-bootstrap": "^2.5.0",
     "angular-route": "1.6.6",
@@ -27,6 +27,6 @@
     "js-polyfills": "^0.1.42"
   },
   "resolutions": {
-    "angular": "1.6.6"
+    "angular": "^1.8.3"
   }
 }

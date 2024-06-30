@@ -336,9 +336,12 @@ def data_profile_summary_list():
     return _data_profile_list(False)
 
 # This shouldn't return that much data, it should only return circle ids and badge descriptor ids.
+
+
 @registry.route('/data/profile')
 def data_profile_list():
     return _data_profile_list(True)
+
 
 def _data_profile_list(full):
     accounts = {a.id: a for a in Account.all_user_accounts()}  # type:Mapping[int, Account]
@@ -402,10 +405,10 @@ def data_account(account_id):
 
 @registry.route("/data/account-summary/<int:account_id>")
 def data_account_summary(account_id):
-    account = Account.find_account_by_id(account_id)
+    account = Account.get_by_id(account_id)
 
     if account is None:
-        abort(404)
+        abort(403)
 
     badges = badge_management.badges_for_account(account.id)
 
@@ -435,8 +438,6 @@ def data_account_summary(account_id):
         summary['membership'] = membership_details
         summary['paying_member'] = paying_member
         summary['employment'] = Company.is_account_employed(account.id)
-
-
 
     return jsonify(summary)
 
@@ -487,6 +488,7 @@ def membership_create_checkout_session():
 
     return jsonify(member_create_checkout_session(account, base_url, price_id))
 
+
 @registry.route('/membership/customer-portal', methods=["POST"])
 def membership_customer_portal():
     account = flask_login.current_user.account
@@ -494,14 +496,17 @@ def membership_customer_portal():
 
     return jsonify(member_customer_portal(account, base_url))
 
+
 @registry.route('/membership/tiers')
 def membership_tiers():
     return jsonify(member_get_tiers())
+
 
 @registry.route('/membership/status')
 def membership_status():
     account = flask_login.current_user.account
     return jsonify(member_get_status(account))
+
 
 @registry.route('/membership/retry-payment', methods=["POST"])
 def membership_retry_payment():
@@ -730,14 +735,16 @@ def service_set_password():
 
     return jsonify({})
 
+
 @registry.route('/service/edit-profile', methods=['POST'])
 @validate_schema(edit_profile_form)
 def service_edit_profile():
-    a = flask_login.current_user.account # type: Account
+    a = flask_login.current_user.account  # type: Account
 
     account_management.edit_profile(a, flask.request.json["phone"])
     db.session.commit()
     return jsonify({})
+
 
 @registry.route('/service/recent-events', methods=['GET'])
 def recent_events():

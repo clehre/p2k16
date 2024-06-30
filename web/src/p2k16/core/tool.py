@@ -62,81 +62,69 @@ class ToolCheckinEvent(object):
 
 class ToolClient(object):
     def __init__(self, cfg: Mapping[str, str]):
+        self.prefix = cfg["MQTT_PREFIX_TOOL"]
+        self._client = self._initialize_mqtt_client(cfg)
 
+    def _initialize_mqtt_client(self, cfg: Mapping[str, str]) -> mqtt.Client:
         host = cfg["MQTT_HOST"]
         port = cfg["MQTT_PORT"]
         username = cfg["MQTT_USERNAME"]
         password = cfg["MQTT_PASSWORD"]
-        self.prefix = cfg["MQTT_PREFIX_TOOL"]
 
-        logger.info("Connecting to {}:{}".format(host, port))
-        logger.info("config: username={}, prefix={}".format(username, self.prefix))
+        logger.info(f"Connecting to {host}:{port}")
+        logger.info(f"Config: username={username}, prefix={self.prefix}")
 
-        keep_alive = 60
         c = mqtt.Client()
         if username:
             c.username_pw_set(username=username, password=password)
-        c.connect_async(host, port, keep_alive)
+        c.connect_async(host, port, keepalive=60)
         c.enable_logger()
         c.loop_start()
+        return c
 
-        self._client = c
-
-    def _mqtt_topic(self, tool, action):
+    def _mqtt_topic(self, tool: str, action: str) -> str:
         return '/'.join([self.prefix, tool, action])
 
     def checkout_tool(self, account: Account, tool: ToolDescription):
-        # Check that user has correct circle and is paying member
-        if not account_management.is_account_in_circle(account, tool.circle):
-            raise P2k16UserException('{} is not in the {} circle'.format(account.display_name(), tool.circle.name))
+        self._validate_account_for_checkout(account, tool)
+        logger.info(f'Checking out tool. username={account.username}, tool={tool.name}')
 
-        if not membership_management.active_member(account) \
-                and len(Company.find_active_companies_with_account(account.id)) == 0:
-            raise P2k16UserException('{} does not have an active membership and is not employed in an active company'.
-                                     format(account.display_name()))
-
-        logger.info('Checking out tool. username={}, tool={}'.format(account.username, tool.name))
-
-        # Verify that tool is not checked out by someone else. Check in first if it is.
         checkout = ToolCheckout.find_by_tool(tool)
-        if checkout:
-            if checkout.account is account:
-                raise P2k16UserException('Tools can only be checked out once.')
 
-            logger.info('Tool checked out by someone else. Assuming control: username={}, tool={}, old_username={}'
-                        .format(account.username, tool.name, checkout.account.name))
+        if checkout and checkout.account != account:
+            logger.info(f'Tool checked out by someone else. Assuming control: username={account.username}, tool={tool.name}, old_username={checkout.account.username}')
             self.checkin_tool(checkout.account, checkout.tool_description)
 
-        # Make a new checkout reservation
         event_management.save_event(ToolCheckoutEvent(tool.name, datetime.now(), account))
-        checkout = ToolCheckout(tool, account, datetime.now())
-        db.session.add(checkout)
+        self._create_tool_checkout(tool, account)
 
-        # Make sure everything has been written to the database before actually opening the door.
-        db.session.flush()
-
-        # TODO: move this to a handler that runs after the transaction is done
-        # TODO: we can look at the responses and see if they where successfully sent/received.
-#        for topic, open_time in publishes:
-#            logger.info("Sending message: {}: {}".format(topic, open_time))
-#            self._client.publish(topic, open_time)
-
-        topic = self._mqtt_topic(tool=tool.name, action='unlock')
-        payload = 'true'
-        logger.info("Sending message: {}: {}".format(topic, payload))
-        self._client.publish(topic, payload)
+        self._publish_mqtt_message(tool.name, 'unlock', 'true')
 
     def checkin_tool(self, account: Account, tool: ToolDescription):
-        logger.info('Checking in tool. username={}, tool={}'.format(account.username, tool.name))
-
+        logger.info(f'Checking in tool. username={account.username}, tool={tool.name}')
         event_management.save_event(ToolCheckinEvent(tool.name, datetime.now(), account))
+
         checkout = ToolCheckout.find_by_tool(tool)
         db.session.delete(checkout)
         db.session.flush()
 
-        topic = self._mqtt_topic(tool=tool.name, action='lock')
-        payload = 'true'
-        logger.info("Sending message: {}: {}".format(topic, payload))
+        self._publish_mqtt_message(tool.name, 'lock', 'true')
+
+    def _validate_account_for_checkout(self, account: Account, tool: ToolDescription):
+        if not account_management.is_account_in_circle(account, tool.circle):
+            raise P2k16UserException(f'{account.display_name()} is not in the {tool.circle.name} circle')
+
+        if not membership_management.active_member(account) and not Company.find_active_companies_with_account(account.id):
+            raise P2k16UserException(f'{account.display_name()} does not have an active membership and is not employed in an active company')
+
+    def _create_tool_checkout(self, tool: ToolDescription, account: Account):
+        checkout = ToolCheckout(tool, account, datetime.now())
+        db.session.add(checkout)
+        db.session.flush()
+
+    def _publish_mqtt_message(self, tool_name: str, action: str, payload: str):
+        topic = self._mqtt_topic(tool_name, action)
+        logger.info(f"Sending message: {topic}: {payload}")
         self._client.publish(topic, payload)
 
 
@@ -144,7 +132,4 @@ def create_client(cfg: Mapping[str, str]) -> ToolClient:
     if "MQTT_HOST" not in cfg:
         logger.info("No MQTT host configured for door, not starting door mqtt client")
         return DummyClient()
-
     return ToolClient(cfg)
-
-
