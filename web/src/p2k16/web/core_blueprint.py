@@ -905,6 +905,14 @@ def p2k16_resources():
     return buf.getvalue(), {'Content-Type': 'application/javascript'}
 
 
+@core.route("/get_last_weeks_visitors/<int:num_days>")
+def get_last_weeks_visitors(num_days):
+    from datetime import datetime, timedelta
+    start = datetime.now() - timedelta(days=num_days)
+    events = event_management.get_door_open_events_by_day(start)
+    return jsonify(events)
+
+
 @core.route("/frontpage-graph")
 def frontpage_graph():
     from datetime import datetime, timedelta
