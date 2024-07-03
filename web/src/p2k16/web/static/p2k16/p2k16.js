@@ -965,14 +965,19 @@
         $uibModal,
         CoreDataService,
         circles,
-        circle
+        circle,
+        $timeout
     ) {
         const self = this;
         self.isNew = !circle.id;
         self.circleName = circle.id ? circle.name : "New circle";
         self.addCircleForm = { commentRequiredForMembership: false };
         self.addMemberForm = { username: "", comment: "" };
-
+        self.userNames = [];
+        const getAllUsers = () => CoreDataService.data_profile_list().then((data) => {
+            self.userList = data.data
+            self.userNames = Object.values(data.data).map(x => x.account.username);
+        })
         const update = (data) => {
             self.circle = data;
             if (!self.members) self.members = [];
@@ -989,6 +994,7 @@
         };
 
         update(circle);
+        getAllUsers();
 
         self.createCircle = () =>
             CoreDataService.create_circle(self.addCircleForm).then((res) =>
@@ -1048,6 +1054,37 @@
                 self.addCircleForm.comment = "Initial admin";
             }
         };
+        self.suggestions = [];
+
+        self.updateSuggestions = () => {
+            if (!self.addMemberForm.username) {
+                self.suggestions = [];
+                return;
+            }
+            self.suggestions = self.filterUserByLetters(self.addMemberForm.username);
+            $scope.$apply();
+
+        };
+
+        self.selectSuggestion = (suggestion) => {
+            self.addMemberForm.username = suggestion;
+            self.suggestions = [];
+        };
+
+        self.updateSuggestions = () => {
+            if (!self.addMemberForm.username) {
+                self.suggestions = self.userNames;
+                return;
+            }
+            $timeout(() => {
+                self.filterUserByLetters(self.addMemberForm.username);
+            });
+        };
+        self.filterUserByLetters = (input) => {
+            self.suggestions = self.userNames.filter(x => x.toLowerCase().startsWith(input.toLowerCase()));
+
+        };
+
     }
 
     /**

@@ -11,7 +11,7 @@
       <label for="name" class="col-sm-3 control-label">Name</label>
       <div class="col-sm-4">
         <input class="form-control" type="text" name="name" id="name" placeholder="name"
-               ng-model="ctrl.addCircleForm.name"/>
+          ng-model="ctrl.addCircleForm.name" />
       </div>
     </div>
     <div class="form-group">
@@ -25,7 +25,7 @@
         <div class="checkbox">
           <label for="comment-required-for-membership">
             <input type="checkbox" id="comment-required-for-membership"
-                   ng-model="ctrl.addCircleForm.commentRequiredForMembership">
+              ng-model="ctrl.addCircleForm.commentRequiredForMembership">
             Comment required for memberships
           </label>
           <span class="help-block">
@@ -40,12 +40,12 @@
       <div class="col-sm-4">
         <label class="radio-inline">
           <input type="radio" name="management-style" id="ADMIN_CIRCLE" value="ADMIN_CIRCLE"
-                 ng-model="ctrl.addCircleForm.managementStyle">
+            ng-model="ctrl.addCircleForm.managementStyle">
           Admin circle
         </label>
         <label class="radio-inline">
           <input type="radio" name="management-style" id="SELF_ADMIN" value="SELF_ADMIN"
-                 ng-model="ctrl.addCircleForm.managementStyle" ng-click="ctrl.selfAdminSelected()">
+            ng-model="ctrl.addCircleForm.managementStyle" ng-click="ctrl.selfAdminSelected()">
           Self admin
         </label>
       </div>
@@ -54,8 +54,8 @@
       <label for="admin-circle" class="col-sm-3 control-label">Admin circle</label>
       <div class="col-sm-4">
         <input class="form-control" type="text" id="admin-circle" placeholder="Admin circle"
-               ng-model="ctrl.addCircleForm.adminCircle"
-               ng-disabled="ctrl.addCircleForm.managementStyle != 'ADMIN_CIRCLE'"/>
+          ng-model="ctrl.addCircleForm.adminCircle"
+          ng-disabled="ctrl.addCircleForm.managementStyle != 'ADMIN_CIRCLE'" />
         <span class="help-block">
           Members in this circle will control the created circle.
         </span>
@@ -65,7 +65,7 @@
       <label for="username" class="col-sm-3 control-label">Initial member</label>
       <div class="col-sm-4">
         <input class="form-control" type="text" id="username" placeholder="Username"
-               ng-model="ctrl.addCircleForm.username" ng-disabled="ctrl.addCircleForm.managementStyle != 'SELF_ADMIN'"/>
+          ng-model="ctrl.addCircleForm.username" ng-disabled="ctrl.addCircleForm.managementStyle != 'SELF_ADMIN'" />
         <span class="help-block">
           This member will be the one that controls the circle.
         </span>
@@ -74,9 +74,8 @@
     <div class="form-group">
       <label for="comment" class="col-sm-3 control-label">Membership comment</label>
       <div class="col-sm-4">
-        <input class="form-control" type="text" id="comment" placeholder="Comment"
-               ng-model="ctrl.addCircleForm.comment"
-               ng-disabled="ctrl.addCircleForm.managementStyle != 'SELF_ADMIN' || !ctrl.addCircleForm.commentRequiredForMembership"/>
+        <input class="form-control" type="text" id="comment" placeholder="Comment" ng-model="ctrl.addCircleForm.comment"
+          ng-disabled="ctrl.addCircleForm.managementStyle != 'SELF_ADMIN' || !ctrl.addCircleForm.commentRequiredForMembership" />
       </div>
     </div>
     <div class="form-group">
@@ -88,26 +87,26 @@
 
   <table class="table" ng-if="ctrl.circle.id">
     <tbody>
-    <tr>
-      <th class="col-sm-4">Comment required</th>
-      <td class="col-sm-8">{{ ctrl.circle.commentRequiredForMembership | yesno }}</td>
-    </tr>
-    <tr>
-      <th class="col-sm-4">Management style</th>
-      <td class="col-sm-8">{{ ctrl.circle.managementStyle }}</td>
-    </tr>
-    <tr>
-      <th class="col-sm-4">Can I manage this circle?</th>
-      <td class="col-sm-8">{{ p2k16.canAdminCircle(ctrl.circle.id) | yesno }}</td>
-    </tr>
-    <tr ng-show="ctrl.circle.managementStyle == 'ADMIN_CIRCLE'">
-      <th>Admin circle</th>
-      <td><a ng-href="#!admin/circle/{{ ctrl.adminCircle.id }}">{{ ctrl.adminCircle.name }}</a></td>
-    </tr>
-    <tr>
-      <th>Description</th>
-      <td>{{ ctrl.circle.description }}</td>
-    </tr>
+      <tr>
+        <th class="col-sm-4">Comment required</th>
+        <td class="col-sm-8">{{ ctrl.circle.commentRequiredForMembership | yesno }}</td>
+      </tr>
+      <tr>
+        <th class="col-sm-4">Management style</th>
+        <td class="col-sm-8">{{ ctrl.circle.managementStyle }}</td>
+      </tr>
+      <tr>
+        <th class="col-sm-4">Can I manage this circle?</th>
+        <td class="col-sm-8">{{ p2k16.canAdminCircle(ctrl.circle.id) | yesno }}</td>
+      </tr>
+      <tr ng-show="ctrl.circle.managementStyle == 'ADMIN_CIRCLE'">
+        <th>Admin circle</th>
+        <td><a ng-href="#!admin/circle/{{ ctrl.adminCircle.id }}">{{ ctrl.adminCircle.name }}</a></td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ ctrl.circle.description }}</td>
+      </tr>
     </tbody>
   </table>
 
@@ -122,18 +121,24 @@
         <label for="username" class="col-sm-3">Username</label>
         <div class="col-sm-4">
           <input class="form-control" type="text" name="email" id="username" placeholder="username"
-                 autocomplete="username" autocapitalize="off"
-                 ng-model="ctrl.addMemberForm.username"/>
+            list="suggestions-list" ng-model="ctrl.addMemberForm.username" autocomplete="off" />
+          <datalist id="suggestions-list">
+            <option ng-repeat="suggestion in ctrl.userNames" value="{{suggestion}}"></option>
+          </datalist>
         </div>
       </div>
+
       <div class="form-group">
         <label for="comment" class="col-sm-3">Comment</label>
         <div class="col-sm-4">
           <textarea class="form-control" rows="3" name="comment" id="comment" placeholder="comment"
-                    ng-model="ctrl.addMemberForm.comment"></textarea>
-          <p ng-if="ctrl.circle.commentRequiredForMembership">This circle requires a comment on memberships.</p>
+            ng-model="ctrl.addMemberForm.comment"></textarea>
+          <p ng-if="ctrl.circle.commentRequiredForMembership">
+            This circle requires a comment on memberships.
+          </p>
         </div>
       </div>
+
       <div class="form-group">
         <div class="col-sm-4 col-sm-offset-2">
           <button class="btn btn-default" ng-click="ctrl.addMember()">Add</button>
@@ -148,26 +153,25 @@
     </h2>
     <table class="table">
       <thead>
-      <tr>
-        <th class="col-sm-2">User</th>
-        <th class="col-sm-3">Created</th>
-        <th class="col-sm-3">Updated</th>
-        <th></th>
-      </tr>
+        <tr>
+          <th class="col-sm-2">User</th>
+          <th class="col-sm-3">Created</th>
+          <th class="col-sm-3">Updated</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
-      <tr ng-repeat-start="m in ctrl.members | orderBy:'account_username'">
-        <td><a href="#!/admin/account/{{ m.account_id }}">{{ m.account_username }}</a></td>
-        <td>{{ m.createdAt | date:'medium' }}</td>
-        <td>{{ m.updatedAt | date:'medium' }}</td>
-        <td>
-          <a ng-click="ctrl.removeMember(m.account_id)">remove</a>
-        </td>
-      </tr>
-      <tr ng-repeat-end ng-if="m.comment">
-        <td></td>
-        <td colspan="3">{{ m.comment }}</td>
-      </tr>
+        <tr ng-repeat-start="m in ctrl.members | orderBy:'account_username'">
+          <td><a href="#!/admin/account/{{ m.account_id }}">{{ m.account_username }}</a></td>
+          <td>{{ m.createdAt | date:'medium' }}</td>
+          <td>{{ m.updatedAt | date:'medium' }}</td>
+          <td>
+            <a ng-click="ctrl.removeMember(m.account_id)" style="cursor: pointer;">remove</a>
+          </td>
+        <tr ng-repeat-end ng-if="m.comment">
+          <td style="color:lightgray">{{m.account_username}}</td>
+          <td colspan="3">{{ m.comment }}</td>
+        </tr>
       </tbody>
       <tfoot>
       </tfoot>

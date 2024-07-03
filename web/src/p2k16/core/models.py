@@ -227,7 +227,10 @@ class Account(P2k16Mixin, CreatedAtMixin, UpdatedAtMixin, db.Model):
 
     @staticmethod
     def get_by_id(_id) -> "Account":
-        return Account.query.filter(Account.id == _id).one()
+        account = Account.query.filter(Account.id == _id).one_or_none()
+        if not account:
+            raise P2k16UserException("User not found")
+        return account
 
     @staticmethod
     def find_account_by_username(username) -> Optional['Account']:
@@ -235,7 +238,10 @@ class Account(P2k16Mixin, CreatedAtMixin, UpdatedAtMixin, db.Model):
 
     @staticmethod
     def get_by_username(username) -> "Account":
-        return Account.query.filter(func.lower(Account.username) == func.lower(username)).one()
+        account = Account.query.filter(func.lower(Account.username) == func.lower(username)).one_or_none()
+        if not account:
+            raise P2k16UserException(f"User: {username} was not found")
+        return account
 
     @staticmethod
     def find_account_by_email(email) -> Optional['Account']:
