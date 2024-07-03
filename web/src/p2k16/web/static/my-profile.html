@@ -99,33 +99,58 @@
 
   <h2 class="text-center">Awarded badges</h2>
   <br>
-  <div class="col-sm-8 col-sm-offset-2">
-    <ul ng-show="ctrl.badges.length" class="list-inline list-inline-badges">
-      <li ng-repeat="b in ctrl.badges" ng-init="bd=ctrl.descriptions[b.description_id]">
-        <span ng-click="ctrl.delete_badge(bd.title)" class="label label-default">{{ bd.title }}</span>
-      </li>
-    </ul>
-    <p ng-hide="ctrl.badges.length" class="text-center">
-      Aaw, you don't have any badges yet.
-    </p>
-  </div>
-
-  <div class="col-sm-12">
-    <hr>
-  </div>
-
-  <h2 class="text-center">Joined circles</h2>
   <br>
   <div class="col-sm-8 col-sm-offset-2">
-    <ul ng-if="ctrl.circles.length" class="list-inline list-inline-badges">
-      <li ng-repeat="c in ctrl.circles">
-        <a href="#!/admin/circle/{{c.id}}"><span class="label label-default">{{ c.name }}</span></a>
+    <ul ng-show="ctrl.badges.length" class="list-inline list-inline-badges">
+      <li ng-repeat="b in ctrl.badges" ng-init="bd=ctrl.descriptions[b.description_id]; b.showBadge=true"
+        style="position: relative;">
+        <div style="display: flex; align-items: center; width: 100%; ">
+          <span ng-show="b.showBadge" class="label label-default"
+            style="flex-grow: 1; display: flex; padding: 0rem; overflow: hidden;">
+            <div style="padding: .15rem;">
+              {{ bd.title }}
+            </div>
+            <div ng-click="b.showMenu = !b.showMenu" ng-show="b.editable &&  !b.showMenu"
+              style="margin-left: .2rem; cursor: pointer; align-items: center; margin-right: .2rem;">...</div>
+            <div ng-show="b.showMenu" style="display: grid; grid-template-columns: 1fr 1fr;;
+ padding-left: .3em; height: 100%;">
+              <div ng-click="b.showMenu = false; ctrl.delete_badge(bd.title); b.showBadge=false;"
+                style="background-color: red; border: none; width: 100%; height: 110%;  cursor: pointer; padding: .1rem;">
+                delete</div>
+              <div ng-click="b.showMenu = false"
+                style="background-color: green; border: none; width: 100%; height: 110%; cursor: pointer;padding: .1rem;">
+                keep</div>
+            </div>
+          </span>
+        </div>
       </li>
     </ul>
   </div>
 
-  <div class="col-sm-12">
-    <hr>
-  </div>
+  </li>
+  </ul>
+  <p ng-hide=" ctrl.badges.length" class="text-center">
+    Aaw, you don't have any badges yet.
+  </p>
+</div>
+<div class="col-sm-12"></div>
+
+<div class="col-sm-12">
+  <hr>
+</div>
+
+<h2 class="text-center">Joined circles</h2>
+<br>
+<div class="col-sm-8 col-sm-offset-2">
+  <ul ng-if="ctrl.circles.length" class="list-inline list-inline-badges">
+    <li ng-repeat="c in ctrl.circles">
+      <a href="#!/admin/circle/{{c.id}}"><span class="label label-default">{{ c.name }}</span></a>
+    </li>
+  </ul>
+</div>
+
+<div class="col-sm-12">
+  <hr>
+</div>
 
 </div>

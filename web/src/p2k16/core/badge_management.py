@@ -49,25 +49,26 @@ def badges_for_account(account_id: int) -> List[AccountBadge]:
     return AccountBadge.query.join(Account, Account.id == AccountBadge.account_id).filter(Account.id == account_id).all()
 
 
-def badge_is_user_made(title: str) -> bool:
-    super_badges = ["first_door_opening", "laser-certified"]
-    return title.lower() not in super_badges
+def badge_is_user_made(badge: AccountBadge) -> bool:
+    return not badge.awarded_by.name.lower() == "system"
 
 
 def remove_badge(account: Account, title: str) -> bool:
-    if not badge_is_user_made(title):
-        logger.error(f"Cannot remove non-user-made badge: {title}")
-        return False
 
     badge_desc = _load_description(title)
     if not badge_desc:
         logger.error(f"Badge description not found for title: {title}")
         return False
 
-    account_badge = AccountBadge.query.filter_by(account=account, description=badge_desc).first()
+    account_badge = AccountBadge.query.filter_by(account=account, description=badge_desc).all()
     if not account_badge:
         logger.error(f"Badge not found for account: {account.username} with title: {title}")
         return False
+    badges = [badge for badge in account_badge if badge_is_user_made(badge)]
+    if len(badges) < 1:
+        logger.error(f"Cannot remove non-user-made badge: {title}")
+        return False
+    account_badge = badges[0]
     events = Event.query.filter(Event.int1 == account_badge.id).all()
     for event in events:
         db.session.delete(event)

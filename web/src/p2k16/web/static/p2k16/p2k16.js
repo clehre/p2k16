@@ -661,19 +661,20 @@
         CoreDataService,
         badgeDescriptions,
         LabelService,
-        BadgeDataService
+        BadgeDataService,
+        $scope,
     ) {
         const self = this;
 
         P2k16.accountListeners.add($scope, (newValue) => {
             updateBadges(newValue);
             updateCircles(newValue);
+            self.badges(newValue);
         });
 
         const updateCircles = (account) =>
             (self.circles = Object.values(account.circles || []));
-        const updateBadges = (account) =>
-            (self.badges = Object.values(account.badges || []));
+        const updateBadges = (account) => this.badge_service.badges_for_user(account.account.id).then((badges) => { this.badges = badges.data; Object.values(this.badges).forEach((badge) => badge.editable = this.isBadgeEditable(badge)) })
 
         self.changePassword = () => {
             CoreDataService.service_set_password(self.changePasswordForm).then(
@@ -725,14 +726,20 @@
             self.badge_service.delete_badge(JSON.stringify({ title: desc })).then((res) => {
                 const msg = res.message || "Badge deleted";
                 P2k16.addInfos(msg);
-                // Optionally, update the badge list
+                const index = self.badges.findIndex(badge => badge.title === desc);
+                if (index !== -1) {
+                    self.badges.splice(index, 1);
+                    $scope.$apply();
+                }
+
                 updateBadges(P2k16.currentProfile());
             }).catch((error) => {
                 console.error("Error deleting badge:", error);
-                P2k16.addErrors("Error deleting badge");
+                P2k16.addErrors(error.data.error);
             });
         };
 
+        self.isBadgeEditable = (desc) => { console.log(desc); return desc.awarded_by_username !== "system"; }
         self.badges = [];
         self.circles = [];
         self.newBadge = {};
@@ -743,8 +750,10 @@
         self.currentProfile = P2k16.currentProfile().account;
         self.profileForm = { phone: self.currentProfile.phone, username: self.currentProfile.username };
         self.isLabelActive = false;
+
         updateBadges(P2k16.currentProfile());
         updateCircles(P2k16.currentProfile());
+        console.log(self.badges)
         self.getCurrentStatus();
     }
 

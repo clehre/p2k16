@@ -667,7 +667,6 @@ def _data_company_save():
 ###############################################################################
 # HTML Pages
 
-
 @core.route('/')
 def index():
     from .badge_blueprint import badge_description_to_json
