@@ -636,7 +636,7 @@
             // For non-paying members, we should check if the user has unpaid invoices / an active subscription
             // This can happen if credit expires or unsufficient funds.
             // In this case, the signup should not be shown.
-            CoreDataService.membership_status().then(function (res) {
+            CoreDataService.membership_status().then((res) => {
                 self.pendingPayment = res.data.subscription_active;
             });
         }
@@ -1082,7 +1082,6 @@
         };
         self.filterUserByLetters = (input) => {
             self.suggestions = self.userNames.filter(x => x.toLowerCase().startsWith(input.toLowerCase()));
-
         };
 
     }
