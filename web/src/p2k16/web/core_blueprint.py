@@ -3,8 +3,8 @@ import hashlib
 import io
 import logging
 import os
+from datetime import datetime, timedelta
 from typing import List, Optional, Mapping, Iterable, Set, Any, Dict
-
 import flask
 import flask_login
 from flask import current_app, abort, Blueprint, render_template, jsonify, request
@@ -17,6 +17,7 @@ from p2k16.core.models import Account, Circle, Company, CompanyEmployee, CircleM
 from p2k16.core.models import AccountBadge
 from p2k16.core.models import db
 from p2k16.web.utils import validate_schema, require_circle_membership, DataServiceTool, ResourcesTool
+
 
 logger = logging.getLogger(__name__)
 
@@ -421,7 +422,7 @@ def data_account_summary(account_id):
     account = Account.get_by_id(account_id)
 
     if account is None:
-        abort(403)
+        abort(404)
 
     badges = badge_management.badges_for_account(account.id)
 
@@ -768,7 +769,6 @@ def service_set_username():
 
 @registry.route('/service/recent-events', methods=['GET'])
 def recent_events():
-    from datetime import datetime, timedelta
     start = datetime.now() - timedelta(hours=24)
     return jsonify([e.to_dict() for e in event_management.get_public_recent_events(start)])
 

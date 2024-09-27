@@ -20,7 +20,6 @@ box_label_form = {
     "required": ["user"]
 }
 
-
 @registry.route('/service/label/print_box_label', methods=['POST'])
 @validate_schema(box_label_form)
 @flask_login.login_required
@@ -46,9 +45,7 @@ def service():
 
     return content, {'Content-Type': 'application/javascript'}
 
-
 service.content = None
-
 
 @registry.route('/service/label/is_available', methods=['GET'])
 def get_label_active():

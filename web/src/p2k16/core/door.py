@@ -5,7 +5,7 @@ from typing import Optional, Mapping, List
 import paho.mqtt.client as mqtt
 import requests
 
-from p2k16.core import P2k16UserException, membership_management
+from p2k16.core import P2k16TechnicalException, P2k16UserException, membership_management
 from p2k16.core import account_management, event_management, badge_management, authz_management
 from p2k16.core.models import db, Account, Circle, Event, Company
 
@@ -104,7 +104,7 @@ class DlockClient(object):
         logger.info("dlock config: base_url={}, username={}".format(self.base_url, self.username))
 
     def open(self, door):
-        logger.info("Sending dlock request: {door.key}: {door.open_time}")
+        logger.info(f"Sending dlock request: {door.key}: {door.open_time}")
 
         url = f"{self.base_url}/doors/{door.key}/unlock"
 
@@ -158,14 +158,14 @@ class MqttClient(object):
         topic = self.prefix + door.topic
         open_time = str(door.open_time)
 
-        logger.info("Sending MQTT message: {topic}: {open_time}")
+        logger.info(f"Sending MQTT message: {topic}: {open_time}")
         self._client.publish(topic, open_time)
 
 # Site-specific configuration  ###############################################
 
 
 _doors = [
-    MqttDoor("bv9-f2-entrance",  name="Entrance", topic="/p2k16dev/doors",
+    DlockDoor("bv9-f2-entrance",  name="Entrance", topic="/p2k16dev/doors",
              open_time=10, circles={"door"}),
 ]
 

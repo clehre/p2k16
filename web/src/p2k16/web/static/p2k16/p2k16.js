@@ -1134,15 +1134,15 @@
             );
         };
 
-        self.removeEmployee = (event, employee) => {
-            event.preventDefault();
+        self.removeEmployee = ($event, employee) => {
+            $event.preventDefault();
             CoreDataService.data_company_remove_employee(company.id, {
                 accountId: employee.account_id,
             }).then((res) => setCompany(res.data));
         };
 
-        self.addEmployee = (event, profile) => {
-            event.preventDefault();
+        self.addEmployee = ($event, profile) => {
+            $event.preventDefault();
             self.query = "";
             CoreDataService.data_company_add_employee(company.id, {
                 accountId: profile.account.id,
