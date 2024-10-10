@@ -331,7 +331,7 @@ class Circle(DefaultMixin, db.Model):
 
     @staticmethod
     def get_by_name(name) -> "Circle":
-        return Circle.query.filter(Circle.name == name).one()
+        return Circle.query.filter(Circle.name == name).one_or_none()
 
 
 # noinspection PyUnusedLocal
