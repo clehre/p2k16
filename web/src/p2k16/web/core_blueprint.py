@@ -740,8 +740,6 @@ def service_edit_profile():
     if len(phone) > 2 and phone != a.phone:
         account_management.edit_profile(a, phone)
 
-    # Maybe we could check if current username is an email, and only enable that way. 
-    # or add a updated at column to the db to limit how often users can change this?
     username = flask.request.json["username"]
     if len(username) > 2 and username != a.username:
         account_management.edit_username(a, username)
