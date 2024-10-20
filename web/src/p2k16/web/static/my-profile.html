@@ -30,25 +30,41 @@
 
   <h2 class="text-center">Edit profile details</h2>
   <br>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <!-- <label for="phone" class="col-sm-3 control-label">Phone number</label> -->
-      <div class="col-sm-6 col-sm-offset-3">
-        <input class="form-control"
-               type="text"
-               name="phone"
-               id="phone"
-               placeholder="Phone"
-               ng-model="ctrl.profileForm.phone"
-               autocomplete="phone" />
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="username" class="col-sm-3 control-label">Username</label>
+        <div class="col-sm-6 col-sm-offset-3">
+            <h4 ng-if="ctrl.isOldUserName()" class="text-center warning" style="color: red;">
+                Your username is no longer valid, please change it to a new one!
+            </h4>
+                  <input ng-disabled="!ctrl.isOldUserName() && ctrl.isNotUpdatedLast6Months()" class="form-control" type="text"
+                    name="username" id="username" placeholder="username" ng-model="ctrl.profileForm.username" 
+                     autocomplete="username" required />
+                    <div ng-show="!ctrl.validUsername()" class="text-danger">
+                      Username must be 1-20 characters long and can only contain letters, numbers, and underscores.
+                    </div>
+            <div class="col-sm-offset-3 text-center">
+              <small style="color:gray">NB: You can only change username once every {{ctrl.MIN_UPDATE_MONTHS}} months!</small>
+            </div>
+            <br>
+        </div>
+        <label for="phone" class="col-sm-3 control-label">Phone number</label>
+        <div class="col-sm-6 col-sm-offset-3">
+          <input class="form-control"
+            type="text"
+            name="phone"
+            id="phone"
+            placeholder="Phone"
+            ng-model="ctrl.profileForm.phone"
+                 autocomplete="phone" />
+        </div>
+        <div class="col-sm-6 col-sm-offset-3 text-center">
+          <small style="color: gray"><br>Current phone: {{ ctrl.profileForm.phone }}</small>
+        </div>
       </div>
-      <div class="col-sm-6 col-sm-offset-3 text-center">
-        <small style="color: gray"><br>Current phone: {{ ctrl.profileForm.phone }}</small>
-      </div>
-    </div>
-    <div class="form-group text-center">
-      <div class="col-sm-6 col-sm-offset-3">
-        <button class="btn btn-primary" ng-click="ctrl.saveProfile()">Save changes</button>
+      <div class="form-group text-center">
+        <div class="col-sm-6 col-sm-offset-3">
+        <button class="btn btn-primary" ng-disabled="!ctrl.validUsername()" ng-click="ctrl.saveProfile()">Save changes</button>
       </div>
     </div>
   </form>
@@ -89,7 +105,7 @@
       </li>
     </ul>
     <p ng-hide="ctrl.badges.length" class="text-center">
-        Aaw, you don't have any badges yet.
+      Aaw, you don't have any badges yet.
     </p>
   </div>
 
@@ -99,9 +115,9 @@
   <br>
   <div class="col-sm-8 col-sm-offset-2">
     <ul ng-if="ctrl.circles.length" class="list-inline list-inline-badges">
-        <li ng-repeat="c in ctrl.circles">
+      <li ng-repeat="c in ctrl.circles">
             <a href="#!/admin/circle/{{c.id}}"><span class="label label-default" >{{ c.name }}</span></a>
-        </li>
+      </li>
     </ul>
   </div>
 

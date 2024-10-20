@@ -710,6 +710,7 @@
      */
     function MyProfileController($scope, P2k16, CoreDataService, badgeDescriptions, LabelService) {
         var self = this;
+        const MIN_UPDATE_MONTHS = 6
 
         P2k16.accountListeners.add($scope, function (newValue) {
             console.log("updated", newValue);
@@ -741,10 +742,42 @@
         }
 
         function saveProfile() {
+            confirmUserName();
             CoreDataService.service_edit_profile(self.profileForm).then(function (res) {
                 var msg = res.message || "Profile saved";
                 P2k16.addInfos(msg);
             });
+        }
+
+        function confirmUserName(){
+            const originalUsername = P2k16.currentProfile().account.username;
+            if (self.profileForm.username !== originalUsername) {
+                if (!confirm(`Are you sure you want to change your username to "${self.profileForm.username}"?\nNB: You can only change username once every ${MIN_UPDATE_MONTHS} months!`)) {
+                    self.profileForm.username = originalUsername;
+                    return;
+                } else {
+                    originalUsername = self.profileForm.username;
+                }
+            }
+        }
+
+        function isNotUpdatedLast6Months() {
+            const updatedAt = new Date(P2k16.currentAccount().updatedAt).getTime();
+            const currentDate = new Date();
+            const sixMonthsAgo = new Date(currentDate.setMonth(currentDate.getMonth() - MIN_UPDATE_MONTHS)).getTime();
+            return updatedAt < sixMonthsAgo;
+        }
+
+        function isOldUserName(){
+            const username = P2k16.currentProfile().account.username;
+            const emailRegex = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+            return (username === "")|| (username && emailRegex.test(username));
+        }
+
+        function validUsername(){
+            const usernameRegex = /^[A-z0-9_-]{3,20}$/;
+            return usernameRegex.test(self.profileForm.username);
         }
 
         self.badges = [];
@@ -756,10 +789,16 @@
         self.printBoxLabel = printBoxLabel;
 
         self.saveProfile = saveProfile;
-        self.profileForm = {
-            phone: P2k16.currentProfile().account.phone
-        };
+        
+        self.isOldUserName = isOldUserName;
+        self.isNotUpdatedLast6Months = isNotUpdatedLast6Months;
+        self.MIN_UPDATE_MONTHS = MIN_UPDATE_MONTHS;
+        self.validUsername = validUsername; 
 
+        self.profileForm = {
+            phone: P2k16.currentProfile().account.phone,
+            username: P2k16.currentProfile().account.username
+        };
         updateBadges(P2k16.currentProfile());
         updateCircles(P2k16.currentProfile());
     }

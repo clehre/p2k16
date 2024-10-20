@@ -62,7 +62,8 @@ set_password_form = {
 edit_profile_form = {
     "type": "object",
     "properties": {
-        "phone": {"type": "string"}
+        "phone": {"type": "string"},
+        "username": {"type": "string"}
     }
 }
 
@@ -735,7 +736,16 @@ def service_set_password():
 def service_edit_profile():
     a = flask_login.current_user.account # type: Account
 
-    account_management.edit_profile(a, flask.request.json["phone"])
+    phone = flask.request.json["phone"]
+    if len(phone) > 2 and phone != a.phone:
+        account_management.edit_profile(a, phone)
+
+    # Maybe we could check if current username is an email, and only enable that way. 
+    # or add a updated at column to the db to limit how often users can change this?
+    username = flask.request.json["username"]
+    if len(username) > 2 and username != a.username:
+        account_management.edit_username(a, username)
+    
     db.session.commit()
     return jsonify({})
 

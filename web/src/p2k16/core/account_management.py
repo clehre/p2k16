@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import logging
 import string
 import re
@@ -196,6 +197,27 @@ def register_account(username: str, email: str, name: str, password: str, phone:
 def edit_profile(account: Account, new_phone: str):
     account.phone = new_phone
     logger.info('Updating profile for account={}'.format(account))
+
+def edit_username(account: Account, new_username: str):
+    if Account.find_account_by_username(new_username):
+        raise P2k16UserException("Username is already taken!")
+    
+    if " " in new_username:
+        raise P2k16UserException("Username cannot contain spaces")
+
+    if not re.match(r"^[A-z0-9_-]+$", new_username):
+        raise P2k16UserException("Username can only contain a-z, 0-9, _ and -.")
+    
+    six_months_ago = datetime.now() - timedelta(days=6*30)
+    if not account.updated_at < six_months_ago:
+        raise P2k16UserException("Username can only be updated every 6 months.")
+    
+    old_username = account.username
+    
+    account.username = new_username
+    account.updated_at = datetime.now()
+    
+    logger.info(f'Updating username for account={account}; old username= {old_username}')
 
 
 # This function raises technical exceptions as a last resort. Methods using this function should check the token or
